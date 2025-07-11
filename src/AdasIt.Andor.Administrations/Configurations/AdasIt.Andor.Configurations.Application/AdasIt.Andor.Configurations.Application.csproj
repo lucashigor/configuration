@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Akka" Version="1.5.44" />
+    <PackageReference Include="Akka.Persistence" Version="1.5.44" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Adasit.Andor\AdasIt.Andor.Domain\AdasIt.Andor.Domain.csproj" />
+    <ProjectReference Include="..\AdasIt.Andor.Configurations.Domain\AdasIt.Andor.Configurations.Domain.csproj" />
+    <ProjectReference Include="..\AdasIt.Andor.Configurations.Dto\AdasIt.Andor.Configurations.ApplicationDto.csproj" />
+    <ProjectReference Include="..\AdasIt.Andor.Configurations.Repository\AdasIt.Andor.Configurations.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>b78d698e-637a-49df-b574-d23698013bf0</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Akka.Hosting" Version="1.5.44" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Application\AdasIt.Andor.Configurations.Application.csproj" />
+    <ProjectReference Include="..\..\AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Domain\AdasIt.Andor.Configurations.Domain.csproj" />
+    <ProjectReference Include="..\..\AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.WebApi\AdasIt.Andor.Configurations.WebApi.csproj" />
+  </ItemGroup>
+
+</Project>
