@@ -1,7 +1,6 @@
 ﻿namespace AdasIt.Andor.Configurations.Dto;
 
 public record CreateConfiguration(
-    Guid id,
     string Name,
     string Value,
     string Description,
@@ -9,5 +8,6 @@ public record CreateConfiguration(
     DateTime? ExpireDate,
     string CreatedBy)
 {
+    public Guid Id { get; set; } = Guid.NewGuid();
     public CancellationToken CancellationToken { get; set; } = default;
 }

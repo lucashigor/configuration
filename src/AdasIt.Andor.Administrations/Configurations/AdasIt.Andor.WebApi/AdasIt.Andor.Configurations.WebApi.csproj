@@ -9,8 +9,6 @@
   <ItemGroup>
     <PackageReference Include="Akka" Version="1.5.44" />
     <PackageReference Include="Akka.Hosting" Version="1.5.44" />
-    <PackageReference Include="AutoMapper" Version="14.0.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>

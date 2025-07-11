@@ -1,5 +1,4 @@
-﻿using AdasIt.Andor.Configurations.Domain.ValueObjects;
-using AdasIt.Andor.Configurations.Dto;
+﻿using AdasIt.Andor.Configurations.Dto;
 using Akka.Actor;
 
 namespace AdasIt.Andor.Configurations.Application;
@@ -10,9 +9,29 @@ public class ConfigurationManagerActor : ReceiveActor
     {
         Receive<CreateConfiguration>(cmd =>
         {
-            var configId = ConfigurationId.New();
-            var child = Context.Child(configId.ToString())
-                        ?? Context.ActorOf(Props.Create(() => new ConfigurationActor(configId, _serviceProvider)), configId.ToString());
+            var childName = $"configuration-{cmd.Id.ToString()}";
+
+            var child = Context.Child(childName);
+
+            if (child == ActorRefs.Nobody)
+            {
+                child = Context.ActorOf(Props.Create(() => new ConfigurationActor(cmd.Id, _serviceProvider)), childName);
+            }
+
+            child.Forward(cmd);
+        });
+
+
+        Receive<GetConfiguration>(cmd =>
+        {
+            var childName = $"configuration-{cmd.Id.ToString()}";
+
+            var child = Context.Child(childName);
+
+            if (child == ActorRefs.Nobody)
+            {
+                child = Context.ActorOf(Props.Create(() => new ConfigurationActor(cmd.Id, _serviceProvider)), childName);
+            }
 
             child.Forward(cmd);
         });

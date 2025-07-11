@@ -1,10 +1,11 @@
 ﻿using AdasIt.Andor.Configurations.Domain;
+using AdasIt.Andor.Configurations.Domain.Events;
 using AdasIt.Andor.Configurations.Domain.ValueObjects;
 using AdasIt.Andor.Configurations.Dto;
 using AdasIt.Andor.Configurations.Repository;
+using AdasIt.Andor.Domain.ValuesObjects;
 using Akka.Actor;
 using Akka.Util.Internal;
-using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AdasIt.Andor.Configurations.Application
@@ -12,22 +13,56 @@ namespace AdasIt.Andor.Configurations.Application
     public class ConfigurationActor : ReceiveActor
     {
         private readonly ConfigurationId _id;
-        private readonly IConfigurationValidator _validator;
         private readonly IActorRef _eventHandler;
+        private readonly Queue<object> _stash = new();
+        private readonly IConfigurationValidator _validator;
+        private readonly IServiceProvider _serviceProvider;
+        private Configuration? _configuration;
 
-        public ConfigurationActor(ConfigurationId id, IServiceProvider _serviceProvider)
+        public ConfigurationActor(ConfigurationId id, IServiceProvider serviceProvider)
         {
-            using var scope = _serviceProvider.CreateScope();
-            var validator = _serviceProvider.GetService<IConfigurationValidator>() ?? throw new ArgumentNullException(nameof(IConfigurationValidator));
-            var mapper = _serviceProvider.GetService<IMapper>() ?? throw new ArgumentNullException(nameof(IMapper));
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _validator = _serviceProvider.GetService<IConfigurationValidator>() ?? throw new ArgumentNullException(nameof(IConfigurationValidator));
 
             _id = id;
-            _validator = validator;
 
-            _eventHandler = Context.ActorOf(Props.Create(() =>
-            new ConfigurationEventHandlerActor(_serviceProvider, mapper)), "event-handler");
+            var childName = "persist" + _id.ToString();
 
-            Context.System.EventStream.Subscribe(Self, typeof(CreateConfiguration));
+            _eventHandler = Context.Child(childName);
+
+            if (_eventHandler == ActorRefs.Nobody)
+            {
+                _eventHandler = Context.ActorOf(
+                    Props.Create(() => new ConfigurationEventHandlerActor(_id)),
+                    childName);
+            }
+
+            Become(Loading);
+        }
+
+        protected override void PreStart()
+        {
+            Self.Tell(new PreLoadConfiguration(_id));
+
+            base.PreStart();
+        }
+
+        private void Loading()
+        {
+            ReceiveAsync<PreLoadConfiguration>(async cmd =>
+            {
+                var result = await _eventHandler.Ask<Configuration?>(new LoadConfiguration(cmd.Id));
+
+                if (result != null)
+                {
+                    _configuration = result;
+
+                    Sender.Tell((DomainResult.Success(), result));
+
+                    Become(Ready);
+                    ProcessStash();
+                }
+            });
 
             Receive<CreateConfiguration>(cmd =>
             {
@@ -54,6 +89,31 @@ namespace AdasIt.Andor.Configurations.Application
                 Sender.Tell((result, config));
                 return;
             });
+
+            Receive<UpdateConfiguration>(msg => _stash.Enqueue(msg));
         }
+
+        private void Ready()
+        {
+            ReceiveAsync<GetConfiguration>(async cmd =>
+            {
+                Sender.Tell((DomainResult.Success(), _configuration));
+            });
+
+            ReceiveAsync<UpdateConfiguration>(async evt =>
+            {
+                Console.WriteLine($"[{_id}] Configuração alterada: {evt.Value}");
+            });
+        }
+
+        private void ProcessStash()
+        {
+            while (_stash.TryDequeue(out var msg))
+            {
+                Self.Tell(msg);
+            }
+        }
+
+        public record PreLoadConfiguration(ConfigurationId Id);
     }
 }

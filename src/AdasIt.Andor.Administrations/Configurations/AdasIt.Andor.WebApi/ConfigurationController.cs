@@ -32,6 +32,18 @@ public class ConfigurationController : ControllerBase
         return Ok("Tá Bala!");
     }
 
+    [HttpGet("{configId}")]
+    public async Task<IActionResult> GetConfiguration([FromRoute] Guid configId)
+    {
+        var cts = new CancellationTokenSource(Timeout);
+
+        var command = new GetConfiguration(configId);
+
+        var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command, Timeout);
+
+        return result.IsSuccess ? Ok(config) : BadRequest(result);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateConfiguration command)
     {

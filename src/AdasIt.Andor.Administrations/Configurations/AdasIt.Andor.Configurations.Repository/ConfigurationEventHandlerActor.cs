@@ -1,125 +1,125 @@
-﻿using AdasIt.Andor.Configurations.Domain.Events;
-using AdasIt.Andor.Configurations.Dto;
+﻿using AdasIt.Andor.Configurations.Domain;
+using AdasIt.Andor.Configurations.Domain.Events;
+using AdasIt.Andor.Configurations.Domain.ValueObjects;
 using AdasIt.Andor.Configurations.Infrastructure.Config;
-using AdasIt.Andor.Configurations.Infrastructure.Repositories;
 using Akka.Actor;
 using Akka.Persistence;
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Mapster;
 
 namespace AdasIt.Andor.Configurations.Repository;
-
-/*
-public class ConfigurationEventHandlerActor : ReceiveActor
-{
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IMapper _mapper;
-
-    public ConfigurationEventHandlerActor(IServiceProvider serviceProvider,
-        IMapper mapper)
-    {
-
-        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-
-        Context.System.EventStream.Subscribe(Self, typeof(LoadConfiguration));
-        Context.System.EventStream.Subscribe(Self, typeof(ConfigurationCreated));
-        Context.System.EventStream.Subscribe(Self, typeof(UpdateConfiguration));
-
-        Receive<LoadConfiguration>(evt =>
-        {
-            using var scope = serviceProvider.CreateScope();
-            var _context = scope.ServiceProvider.GetRequiredService<ConfigurationContext>();
-
-            var result = _context.Configuration.AsNoTracking().FirstOrDefault(x => x.Id == evt.ConfigId);
-
-            Sender.Tell(result);
-        });
-
-        Receive<ConfigurationCreated>(evt =>
-        {
-            using var scope = serviceProvider.CreateScope();
-            var _context = scope.ServiceProvider.GetRequiredService<ConfigurationContext>();
-            var config = _mapper.Map<ConfigurationDto>(evt);
-
-            _context.Configuration.Add(config);
-
-            _context.SaveChanges();
-        });
-
-        Receive<UpdateConfiguration>(evt =>
-        {
-            using var scope = serviceProvider.CreateScope();
-            var _context = scope.ServiceProvider.GetRequiredService<ConfigurationContext>();
-            var result = _context.Configuration.AsNoTracking().FirstOrDefault(x => x.Id == evt.Id);
-
-            result = new ConfigurationDto();
-
-            _context.SaveChanges();
-        });
-    }
-}
-*/
-
 public class ConfigurationEventHandlerActor : ReceivePersistentActor
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IMapper _mapper;
+    private readonly Guid _configId;
+    private ConfigurationDto? _configuration;
 
-    public override string PersistenceId => "configuration-handler";
+    public override string PersistenceId => $"configuration-{_configId}";
 
-    public ConfigurationEventHandlerActor(IServiceProvider serviceProvider, IMapper mapper)
+    public ConfigurationEventHandlerActor(Guid configId)
     {
-        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _configId = configId;
 
         // Command Handlers
         Command<LoadConfiguration>(HandleLoadConfiguration);
         Command<ConfigurationCreated>(HandleConfigurationCreated);
-        Command<UpdateConfiguration>(HandleUpdateConfiguration);
+        Command<ConfigurationUpdated>(HandleUpdateConfiguration);
 
-        // Event Handlers (used during recovery)
-        Recover<ConfigurationCreated>(_ => { /* could rebuild state */ });
-        Recover<UpdateConfiguration>(_ => { /* could rebuild state */ });
+        // Recovery Handlers (Rehydrating State)
+        Recover<ConfigurationCreated>(Apply);
+        Recover<ConfigurationUpdated>(Apply);
     }
 
     private void HandleLoadConfiguration(LoadConfiguration evt)
     {
-        using var scope = _serviceProvider.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<ConfigurationContext>();
+        if (_configuration == null)
+        {
+            Sender.Tell(null);
 
-        var result = context.Configuration.AsNoTracking().FirstOrDefault(x => x.Id == evt.ConfigId);
+            return;
+        }
 
-        Sender.Tell(result);
+        var configuration = LoadConfiguration(_configuration!);
+
+        Sender.Tell(configuration);
     }
 
     private void HandleConfigurationCreated(ConfigurationCreated evt)
     {
+        if (_configuration != null)
+        {
+            Sender.Tell(new Status.Failure(new InvalidOperationException("Configuration already exists.")));
+            return;
+        }
+
         Persist(evt, e =>
         {
-            using var scope = _serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<ConfigurationContext>();
-            var config = _mapper.Map<ConfigurationDto>(e);
-
-            context.Configuration.Add(config);
-            context.SaveChanges();
+            Apply(e);
+            Sender.Tell(new Status.Success($"Configuration {_configId} created."));
         });
     }
 
-    private void HandleUpdateConfiguration(UpdateConfiguration evt)
+    private void HandleUpdateConfiguration(ConfigurationUpdated evt)
     {
+        if (_configuration == null)
+        {
+            Sender.Tell(new Status.Failure(new InvalidOperationException("Configuration not found.")));
+            return;
+        }
+
         Persist(evt, e =>
         {
-            using var scope = _serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<ConfigurationContext>();
-
-            var existing = context.Configuration.FirstOrDefault(x => x.Id == e.Id);
-            if (existing != null)
-            {
-                _mapper.Map(e, existing);
-                context.SaveChanges();
-            }
+            Apply(e);
+            Sender.Tell(new Status.Success($"Configuration {_configId} updated."));
         });
+    }
+
+    private void Apply(ConfigurationCreated evt)
+    {
+        _configuration = evt.Adapt(_configuration);
+    }
+
+    private void Apply(ConfigurationUpdated evt)
+    {
+        if (_configuration != null)
+        {
+            _configuration = evt.Adapt(_configuration);
+        }
+    }
+
+    public static Configuration LoadConfiguration(ConfigurationDto @base)
+    {
+        var propertyValues = new Dictionary<string, object>
+        {
+            { nameof(Configuration.Id), (ConfigurationId)@base.Id },
+            { nameof(Configuration.Name), @base.Name },
+            { nameof(Configuration.Value), @base.Value },
+            { nameof(Configuration.Description), @base.Description },
+            { nameof(Configuration.CreatedBy), @base.CreatedBy },
+            { nameof(Configuration.StartDate), @base.StartDate },
+            { nameof(Configuration.CreatedAt), @base.CreatedAt }
+         };
+
+        if (@base.ExpireDate != null)
+        {
+            propertyValues.Add(nameof(Configuration.ExpireDate), @base.ExpireDate);
+        }
+
+        return CreateInstanceAndSetProperties<Configuration>(propertyValues);
+    }
+    public static T CreateInstanceAndSetProperties<T>(Dictionary<string, object> propertyValues) where T : class
+    {
+        Type type = typeof(T);
+
+        var instance = (T)Activator.CreateInstance(type, true);
+
+        foreach (var property in typeof(T).GetProperties())
+        {
+            if (propertyValues.TryGetValue(property.Name, out var value))
+            {
+                property.SetValue(instance, value);
+            }
+        }
+
+        return instance;
     }
 }
+

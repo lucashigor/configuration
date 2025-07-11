@@ -19,6 +19,9 @@ public class Configuration : AggregateRoot<ConfigurationId>, ISoftDeletableEntit
     public bool IsDeleted { get; private set; }
     public ConfigurationState State => GetStatus(IsDeleted, StartDate, ExpireDate);
 
+    private Configuration()
+    { }
+
     private Configuration(
             ConfigurationId id,
             string name,
