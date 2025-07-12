@@ -8,7 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Akka" Version="1.5.44" />
-    <PackageReference Include="Akka.Persistence" Version="1.5.44" />
+    <PackageReference Include="Akka.Persistence" Version="1.5.20" />
+    <PackageReference Include="Akka.Persistence.PostgreSql" Version="1.5.20" />
     <PackageReference Include="Mapster" Version="7.4.0" />
   </ItemGroup>
 

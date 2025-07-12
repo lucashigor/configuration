@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="Akka.Hosting" Version="1.5.44" />
+    <PackageReference Include="Akka.Persistence" Version="1.5.20" />
+    <PackageReference Include="Akka.Persistence.PostgreSql" Version="1.5.20" />
   </ItemGroup>
 
   <ItemGroup>

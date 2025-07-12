@@ -10,14 +10,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AdasIt.Andor.Configurations.Application
 {
-    public class ConfigurationActor : ReceiveActor
+    public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
     {
         private readonly ConfigurationId _id;
         private readonly IActorRef _eventHandler;
-        private readonly Queue<object> _stash = new();
         private readonly IConfigurationValidator _validator;
         private readonly IServiceProvider _serviceProvider;
         private Configuration? _configuration;
+
+        public IStash Stash { get; set; }
 
         public ConfigurationActor(ConfigurationId id, IServiceProvider serviceProvider)
         {
@@ -57,8 +58,6 @@ namespace AdasIt.Andor.Configurations.Application
                 {
                     _configuration = result;
 
-                    Sender.Tell((DomainResult.Success(), result));
-
                     Become(Ready);
                     ProcessStash();
                 }
@@ -84,13 +83,18 @@ namespace AdasIt.Andor.Configurations.Application
                 if (!cmd.CancellationToken.IsCancellationRequested && config != null && config.Events.Any())
                 {
                     config.Events.ForEach(e => _eventHandler.Tell(e));
+
+                    config.ClearEvents();
                 }
+
+                _configuration = config;
 
                 Sender.Tell((result, config));
                 return;
             });
 
-            Receive<UpdateConfiguration>(msg => _stash.Enqueue(msg));
+            Receive<UpdateConfiguration>(msg => Stash.Stash());
+            Receive<GetConfiguration>(msg => Stash.Stash());
         }
 
         private void Ready()
@@ -102,16 +106,31 @@ namespace AdasIt.Andor.Configurations.Application
 
             ReceiveAsync<UpdateConfiguration>(async evt =>
             {
-                Console.WriteLine($"[{_id}] Configuração alterada: {evt.Value}");
+
+                var result = _configuration.Update(
+                    evt.Name,
+                    evt.Value,
+                    evt.Description,
+                    _configuration.StartDate,
+                    _configuration.ExpireDate,
+                    _validator);
+
+                if (_configuration.Events.Any())
+                {
+                    _configuration.Events.ForEach(e => _eventHandler.Tell(e));
+
+                    _configuration.ClearEvents();
+                }
+
+                Sender.Tell((result, _configuration));
+
+                return;
             });
         }
 
         private void ProcessStash()
         {
-            while (_stash.TryDequeue(out var msg))
-            {
-                Self.Tell(msg);
-            }
+            Stash.UnstashAll();
         }
 
         public record PreLoadConfiguration(ConfigurationId Id);

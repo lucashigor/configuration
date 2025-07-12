@@ -62,7 +62,7 @@ public class ConfigurationController : ControllerBase
         if (id != command.Id)
             return BadRequest("Mismatched ID");
 
-        var result = await _configActor.Ask<DomainResult>(command, Timeout);
+        var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command, Timeout);
         return result.IsSuccess ? Ok() : BadRequest(result);
     }
 }
