@@ -1,5 +1,6 @@
 ﻿using AdasIt.Andor.Configurations.Application;
 using AdasIt.Andor.Configurations.Domain;
+using AdasIt.Andor.Configurations.Infrastructure;
 using Akka.Configuration;
 using Akka.DependencyInjection;
 using Akka.Hosting;
@@ -57,6 +58,13 @@ public static class ConfigurationExtensions
                 var props = DependencyResolver.For(system).Props<ConfigurationManagerActor>();
                 var actorRef = system.ActorOf(props, "configuration-manager-actor");
                 registry.Register<ConfigurationManagerActor>(actorRef);
+            });
+
+            akka.WithActors((system, registry) =>
+            {
+                var props = DependencyResolver.For(system).Props<ConfigurationProjectionActor>();
+                var actorRef = system.ActorOf(props, "configuration-projection-actor");
+                registry.Register<ConfigurationProjectionActor>(actorRef);
             });
         });
 

@@ -8,131 +8,131 @@ using Akka.Actor;
 using Akka.Util.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AdasIt.Andor.Configurations.Application
+namespace AdasIt.Andor.Configurations.Application;
+
+public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
 {
-    public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
+    private readonly ConfigurationId _id;
+    private readonly IActorRef _eventHandler;
+    private readonly IConfigurationValidator _validator;
+    private readonly IServiceProvider _serviceProvider;
+    private Configuration? _configuration;
+
+    public IStash Stash { get; set; }
+
+    public ConfigurationActor(ConfigurationId id, IServiceProvider serviceProvider)
     {
-        private readonly ConfigurationId _id;
-        private readonly IActorRef _eventHandler;
-        private readonly IConfigurationValidator _validator;
-        private readonly IServiceProvider _serviceProvider;
-        private Configuration? _configuration;
+        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        _validator = _serviceProvider.GetService<IConfigurationValidator>() ?? throw new ArgumentNullException(nameof(IConfigurationValidator));
 
-        public IStash Stash { get; set; }
+        _id = id;
 
-        public ConfigurationActor(ConfigurationId id, IServiceProvider serviceProvider)
+        var childName = "persist" + _id.ToString();
+
+        _eventHandler = Context.Child(childName);
+
+        if (_eventHandler == ActorRefs.Nobody)
         {
-            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            _validator = _serviceProvider.GetService<IConfigurationValidator>() ?? throw new ArgumentNullException(nameof(IConfigurationValidator));
+            _eventHandler = Context.ActorOf(
+                Props.Create(() => new ConfigurationEventHandlerActor(_id)),
+                childName);
+        }
 
-            _id = id;
+        Become(Loading);
+    }
 
-            var childName = "persist" + _id.ToString();
+    protected override void PreStart()
+    {
+        Self.Tell(new PreLoadConfiguration(_id));
 
-            _eventHandler = Context.Child(childName);
+        base.PreStart();
+    }
 
-            if (_eventHandler == ActorRefs.Nobody)
+    private void Loading()
+    {
+        ReceiveAsync<PreLoadConfiguration>(async cmd =>
+        {
+            var result = await _eventHandler.Ask<Configuration?>(new LoadConfiguration(cmd.Id));
+
+            if (result != null)
             {
-                _eventHandler = Context.ActorOf(
-                    Props.Create(() => new ConfigurationEventHandlerActor(_id)),
-                    childName);
+                _configuration = result;
+
+                Become(Ready);
+                ProcessStash();
+            }
+        });
+
+        Receive<CreateConfiguration>(cmd =>
+        {
+            if (cmd.CancellationToken.IsCancellationRequested)
+            {
+                return;
             }
 
-            Become(Loading);
-        }
+            var (result, config) = Configuration.New(
+                _id,
+                cmd.Name,
+                cmd.Value,
+                cmd.Description,
+                cmd.StartDate,
+                cmd.ExpireDate,
+                cmd.CreatedBy,
+                _validator);
 
-        protected override void PreStart()
-        {
-            Self.Tell(new PreLoadConfiguration(_id));
-
-            base.PreStart();
-        }
-
-        private void Loading()
-        {
-            ReceiveAsync<PreLoadConfiguration>(async cmd =>
+            if (!cmd.CancellationToken.IsCancellationRequested && config != null && config.Events.Any())
             {
-                var result = await _eventHandler.Ask<Configuration?>(new LoadConfiguration(cmd.Id));
+                config.Events.ForEach(e => _eventHandler.Tell(e));
+                config.Events.ForEach(e => Context.System.EventStream.Publish(e));
 
-                if (result != null)
-                {
-                    _configuration = result;
+                config.ClearEvents();
+            }
 
-                    Become(Ready);
-                    ProcessStash();
-                }
-            });
+            _configuration = config;
 
-            Receive<CreateConfiguration>(cmd =>
-            {
-                if (cmd.CancellationToken.IsCancellationRequested)
-                {
-                    return;
-                }
+            Sender.Tell((result, config));
+            return;
+        });
 
-                var (result, config) = Configuration.New(
-                    _id,
-                    cmd.Name,
-                    cmd.Value,
-                    cmd.Description,
-                    cmd.StartDate,
-                    cmd.ExpireDate,
-                    cmd.CreatedBy,
-                    _validator);
-
-                if (!cmd.CancellationToken.IsCancellationRequested && config != null && config.Events.Any())
-                {
-                    config.Events.ForEach(e => _eventHandler.Tell(e));
-
-                    config.ClearEvents();
-                }
-
-                _configuration = config;
-
-                Sender.Tell((result, config));
-                return;
-            });
-
-            Receive<UpdateConfiguration>(msg => Stash.Stash());
-            Receive<GetConfiguration>(msg => Stash.Stash());
-        }
-
-        private void Ready()
-        {
-            ReceiveAsync<GetConfiguration>(async cmd =>
-            {
-                Sender.Tell((DomainResult.Success(), _configuration));
-            });
-
-            ReceiveAsync<UpdateConfiguration>(async evt =>
-            {
-
-                var result = _configuration.Update(
-                    evt.Name,
-                    evt.Value,
-                    evt.Description,
-                    _configuration.StartDate,
-                    _configuration.ExpireDate,
-                    _validator);
-
-                if (_configuration.Events.Any())
-                {
-                    _configuration.Events.ForEach(e => _eventHandler.Tell(e));
-
-                    _configuration.ClearEvents();
-                }
-
-                Sender.Tell((result, _configuration));
-
-                return;
-            });
-        }
-
-        private void ProcessStash()
-        {
-            Stash.UnstashAll();
-        }
-
-        public record PreLoadConfiguration(ConfigurationId Id);
+        Receive<UpdateConfiguration>(msg => Stash.Stash());
+        Receive<GetConfiguration>(msg => Stash.Stash());
     }
+
+    private void Ready()
+    {
+        ReceiveAsync<GetConfiguration>(async cmd =>
+        {
+            Sender.Tell((DomainResult.Success(), _configuration));
+        });
+
+        ReceiveAsync<UpdateConfiguration>(async evt =>
+        {
+            var result = _configuration.Update(
+                evt.Name,
+                evt.Value,
+                evt.Description,
+                _configuration.StartDate,
+                _configuration.ExpireDate,
+                _validator);
+
+            if (_configuration.Events.Any())
+            {
+                _configuration.Events.ForEach(e => _eventHandler.Tell(e));
+                _configuration.Events.ForEach(e => Context.System.EventStream.Publish(e));
+
+                _configuration.ClearEvents();
+            }
+
+            Sender.Tell((result, _configuration));
+
+            return;
+        });
+    }
+
+    private void ProcessStash()
+    {
+        Stash.UnstashAll();
+    }
+
+    public record PreLoadConfiguration(ConfigurationId Id);
 }
