@@ -2,6 +2,8 @@
 
 public record ConfigurationCreated
 {
+    public Guid EventId { get; init; } = Guid.NewGuid();
+    public DateTime EventDate { get; init; } = DateTime.UtcNow;
     public Guid Id { get; init; }
     public string Name { get; init; } = "";
     public string Value { get; init; } = "";

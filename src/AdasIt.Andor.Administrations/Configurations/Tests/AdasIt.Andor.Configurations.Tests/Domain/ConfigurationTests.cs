@@ -5,12 +5,16 @@ using AdasIt.Andor.Configurations.Domain.ValueObjects;
 using AdasIt.Andor.Configurations.Tests.Domain.Helpers;
 using AdasIt.Andor.Domain.ValuesObjects;
 using FluentAssertions;
+using NSubstitute;
 
 namespace AdasIt.Andor.Configurations.Tests.Domain;
 
 [Collection(nameof(ConfigurationTestFixture))]
 public class ConfigurationTests()
 {
+    private IConfigurationValidator _mockValidator = Substitute.For<IConfigurationValidator>();
+
+
     [Fact(DisplayName = nameof(NewConfigurationValidInputShouldNotHaveNotifications))]
     [Trait("Domain", "Configuration - Validation")]
     public void NewConfigurationValidInputShouldNotHaveNotifications()
@@ -22,7 +26,8 @@ public class ConfigurationTests()
                 description: ConfigurationFixture.GetValidDescription(),
                 startDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
                 expireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting),
-                userId: Guid.NewGuid().ToString());
+                userId: Guid.NewGuid().ToString(),
+                _mockValidator);
 
         result.IsSuccess.Should().BeTrue();
 
@@ -67,7 +72,8 @@ public class ConfigurationTests()
             description: inputConfig.Description,
             startDate: inputConfig.StartDate,
             expireDate: inputConfig.ExpireDate,
-            Guid.NewGuid().ToString());
+            Guid.NewGuid().ToString(),
+            _mockValidator);
 
         result.IsFailure.Should().BeTrue();
 
@@ -93,7 +99,8 @@ public class ConfigurationTests()
             value: updateWithError.Value ?? config.Value,
             description: updateWithError.Description ?? config.Description,
             startDate: updateWithError.StartDate ?? config.StartDate,
-            expireDate: updateWithError.ExpireDate ?? config.ExpireDate
+            expireDate: updateWithError.ExpireDate ?? config.ExpireDate,
+            _mockValidator
         );
 
         result!.Errors.Should().Contain(x => x.Error == updateWithError.Error, updateWithError.Because);

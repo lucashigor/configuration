@@ -1,10 +1,15 @@
 ﻿using AdasIt.Andor.Configurations.Application;
 using AdasIt.Andor.Configurations.Domain;
-using AdasIt.Andor.Configurations.Infrastructure;
+using AdasIt.Andor.Configurations.Domain.Repository;
+using AdasIt.Andor.Configurations.InfraestrucutreQueries;
+using AdasIt.Andor.Configurations.InfrastructureCommands;
+using AdasIt.Andor.Configurations.InfrastructureQueries.Context;
+using AdasIt.Andor.Infrastructure;
 using Akka.Configuration;
 using Akka.DependencyInjection;
 using Akka.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdasIt.Andor.Configurations.WebApi;
 
@@ -55,18 +60,62 @@ public static class ConfigurationExtensions
 
             akka.WithActors((system, registry) =>
             {
-                var props = DependencyResolver.For(system).Props<ConfigurationManagerActor>();
+                var props = DependencyResolver.For(system)
+                                .Props<ConfigurationManagerActor>();
+
                 var actorRef = system.ActorOf(props, "configuration-manager-actor");
                 registry.Register<ConfigurationManagerActor>(actorRef);
             });
 
             akka.WithActors((system, registry) =>
             {
-                var props = DependencyResolver.For(system).Props<ConfigurationProjectionActor>();
-                var actorRef = system.ActorOf(props, "configuration-projection-actor");
-                registry.Register<ConfigurationProjectionActor>(actorRef);
+                var props = DependencyResolver.For(system)
+                                .Props<ConfigurationCommandsInfrastructureSupervisor>();
+
+                var supervisor = system.ActorOf(props, "configuration-infrastructure-supervisor");
+                registry.Register<ConfigurationCommandsInfrastructureSupervisor>(supervisor);
+            });
+
+            akka.WithActors((system, registry) =>
+            {
+                var props = DependencyResolver.For(system)
+                                .Props<ConfigurationQueriesInfrastructureSupervisor>();
+
+                var supervisor = system.ActorOf(props, "configuration-queries-event-handler-actor");
+                registry.Register<ConfigurationQueriesInfrastructureSupervisor>(supervisor);
             });
         });
+
+        services.AddSingleton<IEventPublisher, InMemoryEventPublisher>();
+
+        services.AddSingleton<ICommandsConfigurationRepository>(sp =>
+        {
+            var supervisor = sp.GetRequiredService<ActorRegistry>().Get<ConfigurationCommandsInfrastructureSupervisor>();
+            var eventPublisher = sp.GetRequiredService<IEventPublisher>();
+            return new ConfigurationCommandRepository(supervisor, eventPublisher);
+        });
+
+        var conn = configuration.GetConnectionString(nameof(ConfigurationContext));
+
+        if (string.IsNullOrEmpty(conn) is false)
+        {
+            services.AddDbContext<ConfigurationContext>(options =>
+            {
+                options.EnableDetailedErrors();
+                options.EnableSensitiveDataLogging();
+
+                options.UseNpgsql(conn, x =>
+                {
+                    x.EnableRetryOnFailure(5);
+                    x.MinBatchSize(1);
+                });
+            });
+
+            var serviceProvider = services.BuildServiceProvider();
+            using var scope = serviceProvider.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<ConfigurationContext>();
+            db.Database.Migrate();
+        }
 
         return services;
     }

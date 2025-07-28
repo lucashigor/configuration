@@ -10,4 +10,10 @@
     <ProjectReference Include="..\AdasIt.Andor.Domain\AdasIt.Andor.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+    <PackageReference Include="NSubstitute" />
+  </ItemGroup>
+
 </Project>

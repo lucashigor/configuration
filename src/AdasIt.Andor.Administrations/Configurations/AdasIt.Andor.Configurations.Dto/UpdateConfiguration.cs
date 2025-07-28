@@ -1,10 +1,12 @@
 ﻿namespace AdasIt.Andor.Configurations.Dto;
 
 public record UpdateConfiguration(
-        Guid Id,
+    Guid Id,
         string Name,
         string Value,
         string Description,
         DateTime StartDate,
-        DateTime? ExpireDate,
-        string CreatedBy);
+        DateTime? ExpireDate)
+{
+    public CancellationToken CancellationToken { get; set; } = default;
+}

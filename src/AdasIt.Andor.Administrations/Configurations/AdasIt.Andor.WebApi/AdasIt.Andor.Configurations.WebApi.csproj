@@ -7,17 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Akka" Version="1.5.44" />
-    <PackageReference Include="Akka.Hosting" Version="1.5.44" />
-    <PackageReference Include="Akka.Persistence" Version="1.5.20" />
-    <PackageReference Include="Akka.Persistence.PostgreSql" Version="1.5.20" />
+    <PackageReference Include="Akka" />
+    <PackageReference Include="Akka.Hosting" />
+    <PackageReference Include="Akka.Persistence" />
+    <PackageReference Include="Akka.Persistence.PostgreSql" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Adasit.Andor\AdasIt.Andor.Domain\AdasIt.Andor.Domain.csproj" />
     <ProjectReference Include="..\AdasIt.Andor.Configurations.Application\AdasIt.Andor.Configurations.Application.csproj" />
     <ProjectReference Include="..\AdasIt.Andor.Configurations.Dto\AdasIt.Andor.Configurations.ApplicationDto.csproj" />
-    <ProjectReference Include="..\AdasIt.Andor.Configurations.Repository\AdasIt.Andor.Configurations.Infrastructure.csproj" />
+    <ProjectReference Include="..\AdasIt.Andor.Configurations.InfraestrucutreQueries\AdasIt.Andor.Configurations.InfrastructureQueries.csproj" />
+    <ProjectReference Include="..\AdasIt.Andor.Configurations.Repository\AdasIt.Andor.Configurations.InfrastructureCommands.csproj" />
   </ItemGroup>
 
 </Project>

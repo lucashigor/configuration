@@ -5,14 +5,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Akka" Version="1.5.44" />
-    <PackageReference Include="Akka.Persistence" Version="1.5.20" />
-    <PackageReference Include="Akka.Persistence.PostgreSql" Version="1.5.20" />
-    <PackageReference Include="Mapster" Version="7.4.0" />
+    <PackageReference Include="Akka" />
+    <PackageReference Include="Akka.Persistence" />
+    <PackageReference Include="Akka.Persistence.PostgreSql" />
+    <PackageReference Include="Mapster" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\..\Adasit.Andor\AdasIt.Andor.Infrastructure\AdasIt.Andor.Infrastructure.csproj" />
     <ProjectReference Include="..\AdasIt.Andor.Configurations.Domain\AdasIt.Andor.Configurations.Domain.csproj" />

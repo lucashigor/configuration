@@ -7,23 +7,21 @@ using Akka.Persistence;
 using Mapster;
 
 namespace AdasIt.Andor.Configurations.Repository;
-public class ConfigurationEventHandlerActor : ReceivePersistentActor
+public class ConfigurationCommandsEventHandlerActor : ReceivePersistentActor
 {
     private readonly Guid _configId;
     private ConfigurationDto? _configuration;
 
     public override string PersistenceId => $"configuration-{_configId}";
 
-    public ConfigurationEventHandlerActor(Guid configId)
+    public ConfigurationCommandsEventHandlerActor(Guid configId)
     {
         _configId = configId;
 
-        // Command Handlers
         Command<LoadConfiguration>(HandleLoadConfiguration);
         Command<ConfigurationCreated>(HandleConfigurationCreated);
         Command<ConfigurationUpdated>(HandleUpdateConfiguration);
 
-        // Recovery Handlers (Rehydrating State)
         Recover<ConfigurationCreated>(Apply);
         Recover<ConfigurationUpdated>(Apply);
     }
@@ -32,14 +30,14 @@ public class ConfigurationEventHandlerActor : ReceivePersistentActor
     {
         if (_configuration == null)
         {
-            Sender.Tell(null);
+            Context.Sender.Tell(null);
 
             return;
         }
 
         var configuration = LoadConfiguration(_configuration!);
 
-        Sender.Tell(configuration);
+        Context.Sender.Tell(configuration);
     }
 
     private void HandleConfigurationCreated(ConfigurationCreated evt)

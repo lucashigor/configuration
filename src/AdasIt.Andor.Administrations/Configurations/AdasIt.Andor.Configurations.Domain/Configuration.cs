@@ -43,6 +43,16 @@ public class Configuration : AggregateRoot<ConfigurationId>, ISoftDeletableEntit
     }
 
     public static (DomainResult, Configuration?) New(
+        string name,
+        string value,
+        string description,
+        DateTime startDate,
+        DateTime? expireDate,
+        string userId,
+        IConfigurationValidator configurationValidator)
+        => New(ConfigurationId.New(), name, value, description, startDate, expireDate, userId, configurationValidator);
+
+    public static (DomainResult, Configuration?) New(
         ConfigurationId Id,
         string name,
         string value,

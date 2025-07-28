@@ -31,9 +31,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Configurations
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.WebApi", "Adasit.Andor\AdasIt.Andor.WebApi\AdasIt.Andor.WebApi.csproj", "{BF68BFA6-7AAB-5DD8-7E77-507AFFBA5FFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Configurations.Infrastructure", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Repository\AdasIt.Andor.Configurations.Infrastructure.csproj", "{C207E25E-5487-4381-840F-59B58B899CEF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Configurations.InfrastructureCommands", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Repository\AdasIt.Andor.Configurations.InfrastructureCommands.csproj", "{C207E25E-5487-4381-840F-59B58B899CEF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Infrastructure", "Adasit.Andor\AdasIt.Andor.Infrastructure\AdasIt.Andor.Infrastructure.csproj", "{D8FB0BDF-6859-4F16-B18A-89240B82466D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Application", "Adasit.Andor\AdasIt.Andor.Application\AdasIt.Andor.Application.csproj", "{EDD170FF-A068-4A40-8B65-C9BD154CC108}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Configurations.InfrastructureQueries", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.InfraestrucutreQueries\AdasIt.Andor.Configurations.InfrastructureQueries.csproj", "{9A74112F-9D81-4D55-8D78-F6EF08962624}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +89,14 @@ Global
 		{D8FB0BDF-6859-4F16-B18A-89240B82466D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8FB0BDF-6859-4F16-B18A-89240B82466D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8FB0BDF-6859-4F16-B18A-89240B82466D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDD170FF-A068-4A40-8B65-C9BD154CC108}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDD170FF-A068-4A40-8B65-C9BD154CC108}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDD170FF-A068-4A40-8B65-C9BD154CC108}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDD170FF-A068-4A40-8B65-C9BD154CC108}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A74112F-9D81-4D55-8D78-F6EF08962624}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A74112F-9D81-4D55-8D78-F6EF08962624}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A74112F-9D81-4D55-8D78-F6EF08962624}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A74112F-9D81-4D55-8D78-F6EF08962624}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +116,8 @@ Global
 		{BF68BFA6-7AAB-5DD8-7E77-507AFFBA5FFB} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{C207E25E-5487-4381-840F-59B58B899CEF} = {44779621-AF01-4B3D-91F2-CACEBDA86140}
 		{D8FB0BDF-6859-4F16-B18A-89240B82466D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{EDD170FF-A068-4A40-8B65-C9BD154CC108} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{9A74112F-9D81-4D55-8D78-F6EF08962624} = {44779621-AF01-4B3D-91F2-CACEBDA86140}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2EEA65CF-3488-4AA6-8587-AF18FF18472A}

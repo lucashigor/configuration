@@ -1,6 +1,8 @@
 ﻿using AdasIt.Andor.Configurations.Application;
+using AdasIt.Andor.Configurations.ApplicationDto;
 using AdasIt.Andor.Configurations.Domain;
 using AdasIt.Andor.Configurations.Dto;
+using AdasIt.Andor.Configurations.InfraestrucutreQueries;
 using AdasIt.Andor.Domain.ValuesObjects;
 using Akka.Actor;
 using Akka.Hosting;
@@ -13,6 +15,7 @@ namespace AdasIt.Andor.Configurations.WebApi;
 public class ConfigurationController : ControllerBase
 {
     private readonly IActorRef _configActor;
+    private readonly IActorRef _configActorQueries;
 
     private TimeSpan Timeout =>
 #if DEBUG
@@ -24,6 +27,7 @@ public class ConfigurationController : ControllerBase
     public ConfigurationController(ActorRegistry registry)
     {
         _configActor = registry.Get<ConfigurationManagerActor>();
+        _configActorQueries = registry.Get<ConfigurationQueriesInfrastructureSupervisor>();
     }
 
     [HttpGet]
@@ -39,9 +43,9 @@ public class ConfigurationController : ControllerBase
 
         var command = new GetConfiguration(configId);
 
-        var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command, Timeout);
+        var config = await _configActorQueries.Ask<ConfigurationOutput>(command, Timeout);
 
-        return result.IsSuccess ? Ok(config) : BadRequest(result);
+        return Ok(config);
     }
 
     [HttpPost]
@@ -59,9 +63,6 @@ public class ConfigurationController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateConfiguration command)
     {
-        if (id != command.Id)
-            return BadRequest("Mismatched ID");
-
         var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command, Timeout);
         return result.IsSuccess ? Ok() : BadRequest(result);
     }

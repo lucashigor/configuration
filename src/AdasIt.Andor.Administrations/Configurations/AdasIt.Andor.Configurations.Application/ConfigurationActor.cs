@@ -1,11 +1,9 @@
 ﻿using AdasIt.Andor.Configurations.Domain;
-using AdasIt.Andor.Configurations.Domain.Events;
+using AdasIt.Andor.Configurations.Domain.Repository;
 using AdasIt.Andor.Configurations.Domain.ValueObjects;
 using AdasIt.Andor.Configurations.Dto;
-using AdasIt.Andor.Configurations.Repository;
-using AdasIt.Andor.Domain.ValuesObjects;
+using AdasIt.Andor.Domain.SeedWork.Repositories.CommandRepository;
 using Akka.Actor;
-using Akka.Util.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AdasIt.Andor.Configurations.Application;
@@ -13,30 +11,21 @@ namespace AdasIt.Andor.Configurations.Application;
 public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
 {
     private readonly ConfigurationId _id;
-    private readonly IActorRef _eventHandler;
     private readonly IConfigurationValidator _validator;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ICommandsConfigurationRepository _commandRepository;
     private Configuration? _configuration;
 
-    public IStash Stash { get; set; }
+    public IStash? Stash { get; set; }
 
-    public ConfigurationActor(ConfigurationId id, IServiceProvider serviceProvider)
+    public ConfigurationActor(ConfigurationId id,
+        IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _validator = _serviceProvider.GetService<IConfigurationValidator>() ?? throw new ArgumentNullException(nameof(IConfigurationValidator));
+        _commandRepository = _serviceProvider.GetService<ICommandsConfigurationRepository>() ?? throw new ArgumentNullException(nameof(ICommandRepository<Configuration, ConfigurationId>));
 
         _id = id;
-
-        var childName = "persist" + _id.ToString();
-
-        _eventHandler = Context.Child(childName);
-
-        if (_eventHandler == ActorRefs.Nobody)
-        {
-            _eventHandler = Context.ActorOf(
-                Props.Create(() => new ConfigurationEventHandlerActor(_id)),
-                childName);
-        }
 
         Become(Loading);
     }
@@ -52,7 +41,7 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
     {
         ReceiveAsync<PreLoadConfiguration>(async cmd =>
         {
-            var result = await _eventHandler.Ask<Configuration?>(new LoadConfiguration(cmd.Id));
+            var result = await _commandRepository.GetByIdAsync(_id, CancellationToken.None);
 
             if (result != null)
             {
@@ -63,7 +52,7 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
             }
         });
 
-        Receive<CreateConfiguration>(cmd =>
+        ReceiveAsync<CreateConfiguration>(async cmd =>
         {
             if (cmd.CancellationToken.IsCancellationRequested)
             {
@@ -77,61 +66,46 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
                 cmd.Description,
                 cmd.StartDate,
                 cmd.ExpireDate,
-                cmd.CreatedBy,
+                Guid.NewGuid().ToString(),
                 _validator);
 
             if (!cmd.CancellationToken.IsCancellationRequested && config != null && config.Events.Any())
             {
-                config.Events.ForEach(e => _eventHandler.Tell(e));
-                config.Events.ForEach(e => Context.System.EventStream.Publish(e));
-
-                config.ClearEvents();
+                await _commandRepository.PersistAsync(config, cmd.CancellationToken);
             }
 
             _configuration = config;
 
             Sender.Tell((result, config));
-            return;
         });
 
-        Receive<UpdateConfiguration>(msg => Stash.Stash());
-        Receive<GetConfiguration>(msg => Stash.Stash());
+        Receive<UpdateConfiguration>(msg => Stash!.Stash());
     }
 
     private void Ready()
     {
-        ReceiveAsync<GetConfiguration>(async cmd =>
+        ReceiveAsync<UpdateConfiguration>(async cmd =>
         {
-            Sender.Tell((DomainResult.Success(), _configuration));
-        });
-
-        ReceiveAsync<UpdateConfiguration>(async evt =>
-        {
-            var result = _configuration.Update(
-                evt.Name,
-                evt.Value,
-                evt.Description,
-                _configuration.StartDate,
-                _configuration.ExpireDate,
+            var result = _configuration!.Update(
+                cmd.Name,
+                cmd.Value,
+                cmd.Description,
+                cmd.StartDate,
+                cmd.ExpireDate,
                 _validator);
 
             if (_configuration.Events.Any())
             {
-                _configuration.Events.ForEach(e => _eventHandler.Tell(e));
-                _configuration.Events.ForEach(e => Context.System.EventStream.Publish(e));
-
-                _configuration.ClearEvents();
+                await _commandRepository.PersistAsync(_configuration, cmd.CancellationToken);
             }
 
             Sender.Tell((result, _configuration));
-
-            return;
         });
     }
 
     private void ProcessStash()
     {
-        Stash.UnstashAll();
+        Stash!.UnstashAll();
     }
 
     public record PreLoadConfiguration(ConfigurationId Id);
