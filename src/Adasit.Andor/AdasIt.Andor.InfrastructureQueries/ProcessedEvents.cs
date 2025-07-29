@@ -1,4 +1,4 @@
-﻿namespace AdasIt.Andor.Infrastructure
+﻿namespace AdasIt.Andor.InfrastructureQueries
 {
     public record ProcessedEvents(
         Guid AggregatorId,

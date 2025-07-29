@@ -1,8 +1,10 @@
-﻿namespace AdasIt.Andor.Infrastructure;
+﻿using AdasIt.Andor.Domain.Events;
+
+namespace AdasIt.Andor.Infrastructure;
 
 public interface IEventPublisher
 {
-    Task PublishAsync(object @event, CancellationToken cancellationToken);
-    Task SubscribeAsync(Action<object> handler, CancellationToken cancellationToken);
-    Task UnsubscribeAsync(Action<object> handler, CancellationToken cancellationToken);
+    Task PublishAsync(DomainEvent @event, CancellationToken cancellationToken);
+    Task SubscribeAsync(Action<DomainEvent> handler, CancellationToken cancellationToken);
+    Task UnsubscribeAsync(Action<DomainEvent> handler, CancellationToken cancellationToken);
 }

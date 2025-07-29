@@ -1,0 +1,6 @@
+﻿namespace AdasIt.Andor.DomainQueries;
+
+public record Entity<TEntityKey> where TEntityKey : IEquatable<TEntityKey>
+{
+    public TEntityKey Id { get; set; }
+}

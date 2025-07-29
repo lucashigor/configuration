@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdasIt.Andor.Domain.Events;
+using System;
 using System.Collections.Generic;
 
 namespace AdasIt.Andor.Domain.SeedWork;
@@ -7,20 +8,20 @@ public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot where T : IEq
 {
     protected AggregateRoot()
     {
-        _events = new HashSet<object>();
+        _events = new HashSet<DomainEvent>();
     }
 
 
-    private readonly ICollection<object> _events;
+    private readonly ICollection<DomainEvent> _events;
 
-    public IReadOnlyCollection<object> Events => [.. _events];
+    public IReadOnlyCollection<DomainEvent> Events => [.. _events];
 
     public void ClearEvents()
     {
         _events.Clear();
     }
 
-    protected void RaiseDomainEvent(object @event)
+    protected void RaiseDomainEvent(DomainEvent @event)
     {
         _events.Add(@event);
     }

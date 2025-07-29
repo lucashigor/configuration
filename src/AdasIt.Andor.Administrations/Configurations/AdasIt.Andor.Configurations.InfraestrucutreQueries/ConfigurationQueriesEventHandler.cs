@@ -1,9 +1,10 @@
-﻿using AdasIt.Andor.Configurations.ApplicationDto;
-using AdasIt.Andor.Configurations.Domain.Events;
+﻿using AdasIt.Andor.Configurations.Domain.Events;
 using AdasIt.Andor.Configurations.Domain.ValueObjects;
 using AdasIt.Andor.Configurations.Dto;
 using AdasIt.Andor.Configurations.InfrastructureQueries.Context;
-using AdasIt.Andor.Infrastructure;
+using AdasIt.Andor.Domain.Events;
+using AdasIt.Andor.DomainQueries;
+using AdasIt.Andor.InfrastructureQueries;
 using Akka.Actor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,15 @@ public class ConfigurationQueriesEventHandler : ReceiveActor
             using var scope = _serviceProvider.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<ConfigurationContext>();
 
-            Sender.Tell(db.Configuration.Find(cmd.Id));
+            var entity = db.Configuration
+                .AsNoTracking()
+                .FirstOrDefault(x => x.Id.Equals(cmd.Id));
+
+            var state = Domain.Configuration.GetStatus(false, entity.StartDate, entity.ExpireDate);
+
+            entity.State = new DomainQueries.ConfigurationState(state.Key, state.Name);
+
+            Sender.Tell(entity);
         });
 
         ReceiveAsync<ConfigurationCreated>(async cmd =>
@@ -72,14 +81,74 @@ public class ConfigurationQueriesEventHandler : ReceiveActor
             });
         });
 
-        Receive<ConfigurationDeactivated>(cmd =>
+        ReceiveAsync<ConfigurationDeactivated>(async cmd =>
         {
-            return;
+            using var scope = _serviceProvider.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<ConfigurationContext>();
+
+            var processedEvent = db.ProcessedEvents.Find(cmd.Id, cmd.EventId, "ConfigurationBasicProjection");
+
+            if (processedEvent != null)
+                return;
+            var strategy = db.Database.CreateExecutionStrategy();
+
+            await strategy.ExecuteAsync(async () =>
+            {
+                await using var transaction = await db.Database.BeginTransactionAsync();
+
+                try
+                {
+                    var entity = db.Configuration.FirstOrDefault(x => x.Id.Equals(cmd.Id));
+
+                    entity.ExpireDate = cmd.ExpireDate;
+
+                    db.Upsert(entity);
+                    db.Upsert(new ProcessedEvents(cmd.Id, "ConfigurationBasicProjection", cmd.EventId, DateTime.UtcNow));
+
+                    await db.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            });
         });
 
-        Receive<ConfigurationDeleted>(cmd =>
+        ReceiveAsync<ConfigurationDeleted>(async cmd =>
         {
-            return;
+            using var scope = _serviceProvider.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<ConfigurationContext>();
+
+            var processedEvent = db.ProcessedEvents.Find(cmd.Id, cmd.EventId, "ConfigurationBasicProjection");
+
+            if (processedEvent != null)
+                return;
+            var strategy = db.Database.CreateExecutionStrategy();
+
+            await strategy.ExecuteAsync(async () =>
+            {
+                await using var transaction = await db.Database.BeginTransactionAsync();
+
+                try
+                {
+                    var entity = db.Configuration.FirstOrDefault(x => x.Id.Equals(cmd.Id));
+
+                    db.Remove(entity);
+                    db.Upsert(new ProcessedEvents(cmd.Id, "ConfigurationBasicProjection", cmd.EventId, DateTime.UtcNow));
+
+                    await db.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            });
         });
 
         ReceiveAsync<ConfigurationUpdated>(async cmd =>
@@ -99,7 +168,7 @@ public class ConfigurationQueriesEventHandler : ReceiveActor
 
                 try
                 {
-                    var entity = db.Configuration.Find(cmd.Id);
+                    var entity = db.Configuration.FirstOrDefault(x => x.Id.Equals(cmd.Id));
 
                     entity.Name = cmd.Name;
                     entity.Value = cmd.Value;
@@ -122,14 +191,14 @@ public class ConfigurationQueriesEventHandler : ReceiveActor
             });
         });
 
-        Receive<object>(evt =>
+        Receive<DomainEvent>(evt =>
         {
             switch (evt)
             {
-                case ConfigurationCreated created:
-                case ConfigurationUpdated updated:
-                case ConfigurationDeactivated deactivated:
-                case ConfigurationDeleted deleted:
+                case ConfigurationCreated:
+                case ConfigurationUpdated:
+                case ConfigurationDeactivated:
+                case ConfigurationDeleted:
                     Self.Tell(evt);
                     break;
 

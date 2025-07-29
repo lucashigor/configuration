@@ -1,11 +1,5 @@
-﻿using AdasIt.Andor.Configurations.Application;
-using AdasIt.Andor.Configurations.ApplicationDto;
-using AdasIt.Andor.Configurations.Domain;
+﻿using AdasIt.Andor.Configurations.Application.Interfaces;
 using AdasIt.Andor.Configurations.Dto;
-using AdasIt.Andor.Configurations.InfraestrucutreQueries;
-using AdasIt.Andor.Domain.ValuesObjects;
-using Akka.Actor;
-using Akka.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdasIt.Andor.Configurations.WebApi;
@@ -14,56 +8,47 @@ namespace AdasIt.Andor.Configurations.WebApi;
 [Route("api/configurations")]
 public class ConfigurationController : ControllerBase
 {
-    private readonly IActorRef _configActor;
-    private readonly IActorRef _configActorQueries;
+    private readonly IConfigurationCommandsService _configurationCommands;
+    private readonly IConfigurationQueriesService _configurationQueries;
 
-    private TimeSpan Timeout =>
-#if DEBUG
-        TimeSpan.FromHours(2);
-#else
-    TimeSpan.FromSeconds(5);
-#endif
-
-    public ConfigurationController(ActorRegistry registry)
+    public ConfigurationController(IConfigurationCommandsService configurationCommands, IConfigurationQueriesService configurationQueries)
     {
-        _configActor = registry.Get<ConfigurationManagerActor>();
-        _configActorQueries = registry.Get<ConfigurationQueriesInfrastructureSupervisor>();
+        _configurationCommands = configurationCommands;
+        _configurationQueries = configurationQueries;
     }
 
     [HttpGet]
-    public async Task<IActionResult> TaBala()
+    public IActionResult TaBala()
     {
-        return Ok("Tá Bala!");
+        return Ok("My First Heading!");
     }
 
-    [HttpGet("{configId}")]
-    public async Task<IActionResult> GetConfiguration([FromRoute] Guid configId)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetConfigurationAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var cts = new CancellationTokenSource(Timeout);
-
-        var command = new GetConfiguration(configId);
-
-        var config = await _configActorQueries.Ask<ConfigurationOutput>(command, Timeout);
+        var config = await _configurationQueries.GetByIdAsync(id, cancellationToken);
 
         return Ok(config);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateConfiguration command)
+    public async Task<IActionResult> Create([FromBody] CreateConfiguration command, CancellationToken cancellationToken)
     {
-        var cts = new CancellationTokenSource(Timeout);
+        await _configurationCommands.CreateConfigurationAsync(command, cancellationToken);
 
-        command.CancellationToken = cts.Token;
-
-        var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command, Timeout);
-
-        return result.IsSuccess ? Ok(config) : BadRequest(result);
+        return Accepted();
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateConfiguration command)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateConfiguration command, CancellationToken cancellationToken)
     {
-        var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command, Timeout);
-        return result.IsSuccess ? Ok() : BadRequest(result);
+        if (id != command.Id)
+        {
+            return BadRequest("Configuration ID in the route does not match the ID in the command.");
+        }
+
+        await _configurationCommands.UpdateConfigurationAsync(command, cancellationToken);
+
+        return Accepted();
     }
 }

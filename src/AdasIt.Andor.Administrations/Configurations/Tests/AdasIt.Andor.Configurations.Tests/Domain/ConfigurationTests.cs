@@ -127,7 +127,6 @@ public class ConfigurationTests()
         var result = config.Delete();
 
         // Assert
-        config.IsDeleted.Should().BeTrue();
         result!.Errors.Should().BeEmpty();
         config!.Events.Should().Contain(x => x.GetType() == typeof(ConfigurationDeleted));
         result!.IsFailure.Should().BeFalse();
@@ -148,7 +147,6 @@ public class ConfigurationTests()
         var result = config.Delete();
 
         // Assert
-        config.IsDeleted.Should().BeFalse();
         result!.Warnings.Should().Contain(x => x.Error == ConfigurationsErrorCodes.SetExpireDateToToday);
         result!.IsFailure.Should().BeFalse();
     }
@@ -168,7 +166,6 @@ public class ConfigurationTests()
         var result = config.Delete();
 
         // Assert
-        config.IsDeleted.Should().BeFalse();
         result!.Errors.Should().Contain(x => x.Error == ConfigurationsErrorCodes.ErrorOnDeleteConfiguration);
         result!.IsFailure.Should().BeTrue();
     }

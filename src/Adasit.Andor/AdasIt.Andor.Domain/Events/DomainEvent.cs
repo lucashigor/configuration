@@ -1,0 +1,9 @@
+﻿using System;
+
+namespace AdasIt.Andor.Domain.Events;
+
+public record DomainEvent
+{
+    public Guid EventId { get; init; } = Guid.NewGuid();
+    public DateTime EventDate { get; init; } = DateTime.UtcNow;
+}

@@ -1,9 +1,13 @@
 ﻿using AdasIt.Andor.Configurations.Application;
+using AdasIt.Andor.Configurations.Application.Actors;
+using AdasIt.Andor.Configurations.Application.Interfaces;
 using AdasIt.Andor.Configurations.Domain;
 using AdasIt.Andor.Configurations.Domain.Repository;
 using AdasIt.Andor.Configurations.InfraestrucutreQueries;
 using AdasIt.Andor.Configurations.InfrastructureCommands;
+using AdasIt.Andor.Configurations.InfrastructureQueries;
 using AdasIt.Andor.Configurations.InfrastructureQueries.Context;
+using AdasIt.Andor.DomainQueries;
 using AdasIt.Andor.Infrastructure;
 using Akka.Configuration;
 using Akka.DependencyInjection;
@@ -21,6 +25,10 @@ public static class ConfigurationExtensions
             .PartManager.ApplicationParts.Add(new AssemblyPart(typeof(ConfigurationController).Assembly));
 
         services.AddSingleton<IConfigurationValidator, ConfigurationValidator>();
+        services.AddScoped<IConfigurationCommandsService, ConfigurationCommandsService>();
+        services.AddScoped<IConfigurationQueriesService, ConfigurationQueriesService>();
+        services.AddScoped<IQueriesConfigurationRepository<ConfigurationOutput>,
+            QueriesConfigurationRepository>();
 
         var config = configuration["Akka:Persistence:ConnectionString"];
 

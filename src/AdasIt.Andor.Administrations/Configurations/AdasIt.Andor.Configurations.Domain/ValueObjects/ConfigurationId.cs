@@ -2,6 +2,7 @@
 using AdasIt.Andor.Domain.Validation;
 
 namespace AdasIt.Andor.Configurations.Domain.ValueObjects;
+
 public record struct ConfigurationId(Guid Value) : IId<ConfigurationId>
 {
     public static ConfigurationId New() => new ConfigurationId(Guid.NewGuid());

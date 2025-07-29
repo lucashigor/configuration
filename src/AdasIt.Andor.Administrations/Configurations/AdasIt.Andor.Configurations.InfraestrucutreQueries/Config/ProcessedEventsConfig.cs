@@ -1,4 +1,4 @@
-﻿using AdasIt.Andor.Infrastructure;
+﻿using AdasIt.Andor.InfrastructureQueries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

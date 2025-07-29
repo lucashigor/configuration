@@ -1,13 +1,12 @@
 ﻿using AdasIt.Andor.Configurations.Domain.Errors;
 using AdasIt.Andor.Configurations.Domain.Events;
 using AdasIt.Andor.Configurations.Domain.ValueObjects;
-using AdasIt.Andor.Domain;
 using AdasIt.Andor.Domain.SeedWork;
 using AdasIt.Andor.Domain.ValuesObjects;
 
 namespace AdasIt.Andor.Configurations.Domain;
 
-public class Configuration : AggregateRoot<ConfigurationId>, ISoftDeletableEntity
+public class Configuration : AggregateRoot<ConfigurationId>
 {
     public string Name { get; private set; }
     public string Value { get; private set; }
@@ -16,11 +15,7 @@ public class Configuration : AggregateRoot<ConfigurationId>, ISoftDeletableEntit
     public DateTime? ExpireDate { get; private set; }
     public string CreatedBy { get; private set; }
     public DateTime CreatedAt { get; private set; }
-    public bool IsDeleted { get; private set; }
-    public ConfigurationState State => GetStatus(IsDeleted, StartDate, ExpireDate);
-
-    private Configuration()
-    { }
+    public ConfigurationState State => GetStatus(false, StartDate, ExpireDate);
 
     private Configuration(
             ConfigurationId id,
@@ -88,7 +83,20 @@ public class Configuration : AggregateRoot<ConfigurationId>, ISoftDeletableEntit
         return (result, entity);
     }
 
-    private static ConfigurationState GetStatus(bool _isDeleted, DateTime _startDate, DateTime? _expireDate)
+    public static Configuration Load(
+    ConfigurationId id,
+    string name,
+    string value,
+    string description,
+    DateTime startDate,
+    DateTime? expireDate,
+    string createdBy,
+    DateTime createdAt)
+    {
+        return new Configuration(id, name, value, description, startDate, expireDate, createdBy, createdAt);
+    }
+
+    public static ConfigurationState GetStatus(bool _isDeleted, DateTime _startDate, DateTime? _expireDate)
     {
         if (_isDeleted)
         {
@@ -183,8 +191,6 @@ public class Configuration : AggregateRoot<ConfigurationId>, ISoftDeletableEntit
 
         if (State == ConfigurationState.Awaiting)
         {
-            IsDeleted = true;
-
             RaiseDomainEvent(ConfigurationDeleted.FromConfiguration(this));
         }
 

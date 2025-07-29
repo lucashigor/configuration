@@ -1,5 +1,5 @@
-﻿using AdasIt.Andor.Configurations.ApplicationDto;
-using AdasIt.Andor.Infrastructure;
+﻿using AdasIt.Andor.DomainQueries;
+using AdasIt.Andor.InfrastructureQueries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using System.Reflection;

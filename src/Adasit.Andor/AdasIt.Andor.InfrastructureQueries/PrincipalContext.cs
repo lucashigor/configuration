@@ -1,9 +1,9 @@
-﻿using AdasIt.Andor.Domain;
+﻿using AdasIt.Andor.DomainQueries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Data;
 
-namespace AdasIt.Andor.Infrastructure;
+namespace AdasIt.Andor.InfrastructureQueries;
 
 public static class DbContextOptionsFactory
 {
@@ -59,7 +59,13 @@ public class PrincipalContext(DbContextOptions options)
     public void Upsert<T>(T entity) where T : class
     {
         if (Entry(entity).State == EntityState.Detached)
+        {
             Set<T>().Add(entity);
+        }
+        else if (Entry(entity).State == EntityState.Modified)
+        {
+            Set<T>().Update(entity);
+        }
     }
 
     public void UpsertRange<T>(IEnumerable<T> entities) where T : class

@@ -7,37 +7,46 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adasit.Andor", "Adasit.Ando
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D15C15E0-A123-4187-ACAD-8AE3A55ECDD5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Domain.Tests", "Adasit.Andor\AdasIt.Andor.Domain.Tests\AdasIt.Andor.Domain.Tests.csproj", "{F3FE9446-0491-4E7F-86F6-7F1772420A2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.Domain.Tests", "Adasit.Andor\AdasIt.Andor.Domain.Tests\AdasIt.Andor.Domain.Tests.csproj", "{F3FE9446-0491-4E7F-86F6-7F1772420A2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Domain", "Adasit.Andor\AdasIt.Andor.Domain\AdasIt.Andor.Domain.csproj", "{CA13313B-8FA0-9E29-B17F-B697BBA6B05A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.Domain", "Adasit.Andor\AdasIt.Andor.Domain\AdasIt.Andor.Domain.csproj", "{CA13313B-8FA0-9E29-B17F-B697BBA6B05A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AdasIt.Andor.Administrations", "AdasIt.Andor.Administrations", "{9DEC7EF3-795C-4666-BF1E-FADE0C3C19CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.TestsUtil", "Adasit.Andor\Tests\AdasIt.Andor.TestsUtil\AdasIt.Andor.TestsUtil.csproj", "{C6983CEB-9DF5-4331-B4A9-A1E12020FE3D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.TestsUtil", "Adasit.Andor\Tests\AdasIt.Andor.TestsUtil\AdasIt.Andor.TestsUtil.csproj", "{C6983CEB-9DF5-4331-B4A9-A1E12020FE3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Configurations.WebApi", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.WebApi\AdasIt.Andor.Configurations.WebApi.csproj", "{0A17885D-C5E7-4A33-B839-03E0CB549BA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.Configurations.WebApi", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.WebApi\AdasIt.Andor.Configurations.WebApi.csproj", "{0A17885D-C5E7-4A33-B839-03E0CB549BA2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{44779621-AF01-4B3D-91F2-CACEBDA86140}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4CFE26FA-F2BC-4E2E-A33E-32F4ADEFA72C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Configurations.Tests", "AdasIt.Andor.Administrations\Configurations\Tests\AdasIt.Andor.Configurations.Tests\AdasIt.Andor.Configurations.Tests.csproj", "{26A52C26-C293-A7D6-04B5-B652F96E82C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.Configurations.Tests", "AdasIt.Andor.Administrations\Configurations\Tests\AdasIt.Andor.Configurations.Tests\AdasIt.Andor.Configurations.Tests.csproj", "{26A52C26-C293-A7D6-04B5-B652F96E82C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Configurations.Application", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Application\AdasIt.Andor.Configurations.Application.csproj", "{63B23846-0DBF-CC34-D3EC-515C0626D395}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.Configurations.Application", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Application\AdasIt.Andor.Configurations.Application.csproj", "{63B23846-0DBF-CC34-D3EC-515C0626D395}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Configurations.Domain", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Domain\AdasIt.Andor.Configurations.Domain.csproj", "{8A9052B8-E293-8761-2ABB-114932F2F05D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.Configurations.Domain", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Domain\AdasIt.Andor.Configurations.Domain.csproj", "{8A9052B8-E293-8761-2ABB-114932F2F05D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Configurations.ApplicationDto", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Dto\AdasIt.Andor.Configurations.ApplicationDto.csproj", "{5BD12D51-03B4-6F74-3C3C-F10676AF6D7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.Configurations.ApplicationDto", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Dto\AdasIt.Andor.Configurations.ApplicationDto.csproj", "{5BD12D51-03B4-6F74-3C3C-F10676AF6D7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.WebApi", "Adasit.Andor\AdasIt.Andor.WebApi\AdasIt.Andor.WebApi.csproj", "{BF68BFA6-7AAB-5DD8-7E77-507AFFBA5FFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.WebApi", "Adasit.Andor\AdasIt.Andor.WebApi\AdasIt.Andor.WebApi.csproj", "{BF68BFA6-7AAB-5DD8-7E77-507AFFBA5FFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Configurations.InfrastructureCommands", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Repository\AdasIt.Andor.Configurations.InfrastructureCommands.csproj", "{C207E25E-5487-4381-840F-59B58B899CEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.Configurations.InfrastructureCommands", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Repository\AdasIt.Andor.Configurations.InfrastructureCommands.csproj", "{C207E25E-5487-4381-840F-59B58B899CEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Infrastructure", "Adasit.Andor\AdasIt.Andor.Infrastructure\AdasIt.Andor.Infrastructure.csproj", "{D8FB0BDF-6859-4F16-B18A-89240B82466D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.Infrastructure", "Adasit.Andor\AdasIt.Andor.Infrastructure\AdasIt.Andor.Infrastructure.csproj", "{D8FB0BDF-6859-4F16-B18A-89240B82466D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Application", "Adasit.Andor\AdasIt.Andor.Application\AdasIt.Andor.Application.csproj", "{EDD170FF-A068-4A40-8B65-C9BD154CC108}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.DomainQueries", "Adasit.Andor\AdasIt.Andor.Application\AdasIt.Andor.DomainQueries.csproj", "{EDD170FF-A068-4A40-8B65-C9BD154CC108}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Configurations.InfrastructureQueries", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.InfraestrucutreQueries\AdasIt.Andor.Configurations.InfrastructureQueries.csproj", "{9A74112F-9D81-4D55-8D78-F6EF08962624}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.Configurations.InfrastructureQueries", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.InfraestrucutreQueries\AdasIt.Andor.Configurations.InfrastructureQueries.csproj", "{9A74112F-9D81-4D55-8D78-F6EF08962624}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.Configurations.DomainQueries", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.DomainQueries\AdasIt.Andor.Configurations.DomainQueries.csproj", "{FA5F6CED-6F9D-463E-A9F7-8AB864F8182B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdasIt.Andor.InfrastructureQueries", "Adasit.Andor\AdasIt.Andor.InfrastructureQueries\AdasIt.Andor.InfrastructureQueries.csproj", "{3503C0A0-00B6-4B82-9BEF-A0194765A531}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1709E81E-AAA0-4D9E-9B39-83965BCC891D}"
+	ProjectSection(SolutionItems) = preProject
+		.cspell.json = .cspell.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,6 +106,14 @@ Global
 		{9A74112F-9D81-4D55-8D78-F6EF08962624}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A74112F-9D81-4D55-8D78-F6EF08962624}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A74112F-9D81-4D55-8D78-F6EF08962624}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA5F6CED-6F9D-463E-A9F7-8AB864F8182B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA5F6CED-6F9D-463E-A9F7-8AB864F8182B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA5F6CED-6F9D-463E-A9F7-8AB864F8182B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA5F6CED-6F9D-463E-A9F7-8AB864F8182B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3503C0A0-00B6-4B82-9BEF-A0194765A531}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3503C0A0-00B6-4B82-9BEF-A0194765A531}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3503C0A0-00B6-4B82-9BEF-A0194765A531}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3503C0A0-00B6-4B82-9BEF-A0194765A531}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -118,6 +135,8 @@ Global
 		{D8FB0BDF-6859-4F16-B18A-89240B82466D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{EDD170FF-A068-4A40-8B65-C9BD154CC108} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{9A74112F-9D81-4D55-8D78-F6EF08962624} = {44779621-AF01-4B3D-91F2-CACEBDA86140}
+		{FA5F6CED-6F9D-463E-A9F7-8AB864F8182B} = {44779621-AF01-4B3D-91F2-CACEBDA86140}
+		{3503C0A0-00B6-4B82-9BEF-A0194765A531} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2EEA65CF-3488-4AA6-8587-AF18FF18472A}

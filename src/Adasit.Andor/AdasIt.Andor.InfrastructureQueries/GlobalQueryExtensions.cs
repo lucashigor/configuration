@@ -1,9 +1,9 @@
-﻿using AdasIt.Andor.Domain;
+﻿using AdasIt.Andor.DomainQueries;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AdasIt.Andor.Infrastructure;
+namespace AdasIt.Andor.InfrastructureQueries;
 public static class GlobalQueryExtensions
 {
     public static void AddSoftDeleteQueryFilter(this IMutableEntityType entityType)

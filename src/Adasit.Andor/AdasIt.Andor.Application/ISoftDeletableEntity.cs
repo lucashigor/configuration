@@ -1,4 +1,4 @@
-﻿namespace AdasIt.Andor.Domain;
+﻿namespace AdasIt.Andor.DomainQueries;
 
 public interface ISoftDeletableEntity
 {

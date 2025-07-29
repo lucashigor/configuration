@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AdasIt.Andor.Domain.SeedWork.Repositories.CommandRepository;
+namespace AdasIt.Andor.Domain.SeedWork.Repositories;
 
 public interface ICommandRepository<TEntity, TEntityId>
     where TEntity : AggregateRoot<TEntityId>

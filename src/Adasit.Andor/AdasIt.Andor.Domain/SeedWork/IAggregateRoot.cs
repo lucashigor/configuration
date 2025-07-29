@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using AdasIt.Andor.Domain.Events;
+using System.Collections.Generic;
 
 namespace AdasIt.Andor.Domain.SeedWork;
 
 public interface IAggregateRoot
 {
-    IReadOnlyCollection<object> Events { get; }
+    IReadOnlyCollection<DomainEvent> Events { get; }
 
     void ClearEvents();
 }

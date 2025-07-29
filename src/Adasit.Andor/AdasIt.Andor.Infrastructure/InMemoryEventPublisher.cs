@@ -1,15 +1,15 @@
-﻿using AdasIt.Andor.Infrastructure;
+﻿using AdasIt.Andor.Domain.Events;
 
-namespace AdasIt.Andor.Configurations.Application;
+namespace AdasIt.Andor.Infrastructure;
 
 public class InMemoryEventPublisher : IEventPublisher
 {
-    private readonly List<Action<object>> _subscribers = new();
-    private readonly object _lock = new();
+    private readonly List<Action<DomainEvent>> _subscribers = new();
+    private readonly DomainEvent _lock = new();
 
-    public Task PublishAsync(object @event, CancellationToken cancellationToken)
+    public Task PublishAsync(DomainEvent @event, CancellationToken cancellationToken)
     {
-        List<Action<object>> subscribersCopy;
+        List<Action<DomainEvent>> subscribersCopy;
 
         lock (_lock)
         {
@@ -24,7 +24,7 @@ public class InMemoryEventPublisher : IEventPublisher
         return Task.CompletedTask;
     }
 
-    public Task SubscribeAsync(Action<object> handler, CancellationToken cancellationToken)
+    public Task SubscribeAsync(Action<DomainEvent> handler, CancellationToken cancellationToken)
     {
         lock (_lock)
         {
@@ -37,7 +37,7 @@ public class InMemoryEventPublisher : IEventPublisher
         return Task.CompletedTask;
     }
 
-    public Task UnsubscribeAsync(Action<object> handler, CancellationToken cancellationToken)
+    public Task UnsubscribeAsync(Action<DomainEvent> handler, CancellationToken cancellationToken)
     {
         lock (_lock)
         {
@@ -47,4 +47,3 @@ public class InMemoryEventPublisher : IEventPublisher
         return Task.CompletedTask;
     }
 }
-

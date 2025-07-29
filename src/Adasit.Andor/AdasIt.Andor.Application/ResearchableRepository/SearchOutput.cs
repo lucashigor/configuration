@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace AdasIt.Andor.Domain.SeedWork.Repositories.ResearchableRepository;
+﻿namespace AdasIt.Andor.DomainQueries.ResearchableRepository;
 
 public record SearchOutput<TAggregate>(
     int CurrentPage,

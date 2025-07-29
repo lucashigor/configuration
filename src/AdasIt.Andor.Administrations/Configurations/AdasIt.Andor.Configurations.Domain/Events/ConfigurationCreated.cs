@@ -1,9 +1,9 @@
-﻿namespace AdasIt.Andor.Configurations.Domain.Events;
+﻿using AdasIt.Andor.Domain.Events;
 
-public record ConfigurationCreated
+namespace AdasIt.Andor.Configurations.Domain.Events;
+
+public record ConfigurationCreated : DomainEvent
 {
-    public Guid EventId { get; init; } = Guid.NewGuid();
-    public DateTime EventDate { get; init; } = DateTime.UtcNow;
     public Guid Id { get; init; }
     public string Name { get; init; } = "";
     public string Value { get; init; } = "";
@@ -12,7 +12,6 @@ public record ConfigurationCreated
     public DateTime? ExpireDate { get; init; }
     public string CreatedBy { get; init; } = "";
     public DateTime CreatedAt { get; init; }
-    public bool IsDeleted { get; init; }
 
     public static ConfigurationCreated FromConfiguration(Configuration Configuration)
         => new ConfigurationCreated() with
@@ -24,7 +23,6 @@ public record ConfigurationCreated
             StartDate = Configuration.StartDate,
             ExpireDate = Configuration.ExpireDate,
             CreatedBy = Configuration.CreatedBy,
-            CreatedAt = Configuration.CreatedAt,
-            IsDeleted = Configuration.IsDeleted
+            CreatedAt = Configuration.CreatedAt
         };
 }

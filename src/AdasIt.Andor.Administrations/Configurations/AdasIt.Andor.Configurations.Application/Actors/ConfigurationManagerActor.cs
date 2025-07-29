@@ -1,7 +1,7 @@
 ﻿using AdasIt.Andor.Configurations.Dto;
 using Akka.Actor;
 
-namespace AdasIt.Andor.Configurations.Application;
+namespace AdasIt.Andor.Configurations.Application.Actors;
 
 public class ConfigurationManagerActor : ReceiveActor
 {

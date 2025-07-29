@@ -2,11 +2,11 @@
 using AdasIt.Andor.Configurations.Domain.Repository;
 using AdasIt.Andor.Configurations.Domain.ValueObjects;
 using AdasIt.Andor.Configurations.Dto;
-using AdasIt.Andor.Domain.SeedWork.Repositories.CommandRepository;
+using AdasIt.Andor.Domain.SeedWork.Repositories;
 using Akka.Actor;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AdasIt.Andor.Configurations.Application;
+namespace AdasIt.Andor.Configurations.Application.Actors;
 
 public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
 {
@@ -22,8 +22,8 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
         IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        _validator = _serviceProvider.GetService<IConfigurationValidator>() ?? throw new ArgumentNullException(nameof(IConfigurationValidator));
-        _commandRepository = _serviceProvider.GetService<ICommandsConfigurationRepository>() ?? throw new ArgumentNullException(nameof(ICommandRepository<Configuration, ConfigurationId>));
+        _validator = _serviceProvider.GetService<IConfigurationValidator>() ?? throw new InvalidOperationException(nameof(_validator));
+        _commandRepository = _serviceProvider.GetService<ICommandsConfigurationRepository>() ?? throw new InvalidOperationException(nameof(ICommandRepository<Configuration, ConfigurationId>));
 
         _id = id;
 

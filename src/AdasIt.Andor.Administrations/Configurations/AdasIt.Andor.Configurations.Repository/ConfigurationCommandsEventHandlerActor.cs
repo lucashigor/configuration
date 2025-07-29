@@ -84,40 +84,8 @@ public class ConfigurationCommandsEventHandlerActor : ReceivePersistentActor
     }
 
     public static Configuration LoadConfiguration(ConfigurationDto @base)
-    {
-        var propertyValues = new Dictionary<string, object>
-        {
-            { nameof(Configuration.Id), (ConfigurationId)@base.Id },
-            { nameof(Configuration.Name), @base.Name },
-            { nameof(Configuration.Value), @base.Value },
-            { nameof(Configuration.Description), @base.Description },
-            { nameof(Configuration.CreatedBy), @base.CreatedBy },
-            { nameof(Configuration.StartDate), @base.StartDate },
-            { nameof(Configuration.CreatedAt), @base.CreatedAt }
-         };
-
-        if (@base.ExpireDate != null)
-        {
-            propertyValues.Add(nameof(Configuration.ExpireDate), @base.ExpireDate);
-        }
-
-        return CreateInstanceAndSetProperties<Configuration>(propertyValues);
-    }
-    public static T CreateInstanceAndSetProperties<T>(Dictionary<string, object> propertyValues) where T : class
-    {
-        Type type = typeof(T);
-
-        var instance = (T)Activator.CreateInstance(type, true);
-
-        foreach (var property in typeof(T).GetProperties())
-        {
-            if (propertyValues.TryGetValue(property.Name, out var value))
-            {
-                property.SetValue(instance, value);
-            }
-        }
-
-        return instance;
-    }
+        => Configuration.Load(new ConfigurationId(@base.Id), @base.Name, @base.Value,
+            @base.Description, @base.StartDate, @base.ExpireDate, @base.CreatedBy,
+            @base.CreatedAt);
 }
 

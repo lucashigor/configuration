@@ -10,6 +10,5 @@
         public DateTime? ExpireDate { get; init; }
         public string CreatedBy { get; init; }
         public DateTime CreatedAt { get; init; }
-        public bool IsDeleted { get; init; }
     }
 }

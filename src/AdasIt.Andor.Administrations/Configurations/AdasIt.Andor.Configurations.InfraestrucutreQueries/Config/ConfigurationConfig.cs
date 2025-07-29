@@ -1,4 +1,4 @@
-﻿using AdasIt.Andor.Configurations.ApplicationDto;
+﻿using AdasIt.Andor.DomainQueries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
