@@ -22,23 +22,5 @@ public static class GeneralFixture
 
         return stringValue;
     }
-
-    public static T CreateInstanceAndSetProperties<T>(Dictionary<string, object> propertyValues) where T : class
-    {
-        Type type = typeof(T);
-
-        var instance = (T)Activator.CreateInstance(type, true);
-
-        foreach (var property in typeof(T).GetProperties())
-        {
-            if (propertyValues.TryGetValue(property.Name, out var value))
-            {
-                property.SetValue(instance, value);
-            }
-        }
-
-        return instance;
-    }
-
 }
 

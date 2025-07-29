@@ -36,7 +36,7 @@ public class QueryHelper<TEntity, TEntityId>(PrincipalContext context)
         int perPage,
         out int totalPages)
         => Extension.GetManyPaginated(
-            _dbSet, loggedUserFilter, new List<Expression<Func<TEntity, bool>>>() { where }, orderBy, order, page, perPage, null!, out totalPages);
+            _dbSet, loggedUserFilter, [where], orderBy, order, page, perPage, null!, out totalPages);
 
     protected virtual IQueryable<TEntity> GetManyPaginated(List<Expression<Func<TEntity, bool>>> where,
         string? orderBy,
@@ -137,7 +137,7 @@ public static class Extension
             query = _dbSet.AsNoTracking();
         }
 
-        if (where != null && where.Any())
+        if (where != null && where.Count != 0)
         {
             foreach (var item in where)
             {

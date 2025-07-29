@@ -1,6 +1,6 @@
 ﻿using AdasIt.Andor.DomainQueries.ResearchableRepository;
 
-namespace AdasIt.Andor.DomainQueries;
+namespace AdasIt.Andor.Configurations.DomainQueries;
 
 public interface IQueriesConfigurationRepository<TOutput> :
     IResearchableRepository<TOutput, Guid, SearchConfigurationInput>

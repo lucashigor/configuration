@@ -3,7 +3,7 @@ using AdasIt.Andor.Configurations.Dto;
 using AdasIt.Andor.Infrastructure;
 using Akka.Actor;
 
-namespace AdasIt.Andor.Configurations.InfraestrucutreQueries;
+namespace AdasIt.Andor.Configurations.InfrastructureQueries;
 
 public class ConfigurationQueriesInfrastructureSupervisor : ReceiveActor
 {
@@ -74,7 +74,7 @@ public class ConfigurationQueriesInfrastructureSupervisor : ReceiveActor
 
     private IActorRef GetActor(Guid id)
     {
-        var childName = $"configuration-queries-{id.ToString()}";
+        var childName = $"configuration-queries-{id}";
 
         var child = Context.Child(childName);
 

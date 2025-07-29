@@ -1,15 +1,15 @@
 ﻿using AdasIt.Andor.Configurations.Domain.Events;
 using AdasIt.Andor.Configurations.Domain.ValueObjects;
+using AdasIt.Andor.Configurations.DomainQueries;
 using AdasIt.Andor.Configurations.Dto;
 using AdasIt.Andor.Configurations.InfrastructureQueries.Context;
 using AdasIt.Andor.Domain.Events;
-using AdasIt.Andor.DomainQueries;
 using AdasIt.Andor.InfrastructureQueries;
 using Akka.Actor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AdasIt.Andor.Configurations.InfraestrucutreQueries;
+namespace AdasIt.Andor.Configurations.InfrastructureQueries;
 
 public class ConfigurationQueriesEventHandler : ReceiveActor
 {
@@ -29,6 +29,14 @@ public class ConfigurationQueriesEventHandler : ReceiveActor
             var entity = db.Configuration
                 .AsNoTracking()
                 .FirstOrDefault(x => x.Id.Equals(cmd.Id));
+
+
+            if (entity == null)
+            {
+                Sender.Tell(null);
+
+                return;
+            }
 
             var state = Domain.Configuration.GetStatus(false, entity.StartDate, entity.ExpireDate);
 
@@ -100,6 +108,12 @@ public class ConfigurationQueriesEventHandler : ReceiveActor
                 {
                     var entity = db.Configuration.FirstOrDefault(x => x.Id.Equals(cmd.Id));
 
+                    if (entity == null)
+                    {
+                        await transaction.RollbackAsync();
+                        return;
+                    }
+
                     entity.ExpireDate = cmd.ExpireDate;
 
                     db.Upsert(entity);
@@ -136,6 +150,12 @@ public class ConfigurationQueriesEventHandler : ReceiveActor
                 {
                     var entity = db.Configuration.FirstOrDefault(x => x.Id.Equals(cmd.Id));
 
+                    if (entity == null)
+                    {
+                        await transaction.RollbackAsync();
+                        return;
+                    }
+
                     db.Remove(entity);
                     db.Upsert(new ProcessedEvents(cmd.Id, "ConfigurationBasicProjection", cmd.EventId, DateTime.UtcNow));
 
@@ -169,6 +189,12 @@ public class ConfigurationQueriesEventHandler : ReceiveActor
                 try
                 {
                     var entity = db.Configuration.FirstOrDefault(x => x.Id.Equals(cmd.Id));
+
+                    if (entity == null)
+                    {
+                        await transaction.RollbackAsync();
+                        return;
+                    }
 
                     entity.Name = cmd.Name;
                     entity.Value = cmd.Value;
@@ -207,5 +233,4 @@ public class ConfigurationQueriesEventHandler : ReceiveActor
             }
         });
     }
-
 }

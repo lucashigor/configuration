@@ -1,13 +1,15 @@
-﻿namespace AdasIt.Andor.DomainQueries;
+﻿using AdasIt.Andor.DomainQueries;
+
+namespace AdasIt.Andor.Configurations.DomainQueries;
 
 public record ConfigurationOutput : Entity<Guid>
 {
-    public string Name { get; set; }
-    public string Value { get; set; }
-    public string Description { get; set; }
+    public string Name { get; set; } = "";
+    public string Value { get; set; } = "";
+    public string Description { get; set; } = "";
     public DateTime StartDate { get; set; }
     public DateTime? ExpireDate { get; set; }
-    public string CreatedBy { get; set; }
+    public string CreatedBy { get; set; } = "";
     public DateTime CreatedAt { get; set; }
     public ConfigurationState? State { get; set; }
 }

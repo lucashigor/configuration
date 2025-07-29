@@ -1,9 +1,9 @@
 ﻿using AdasIt.Andor.DomainQueries.ResearchableRepository;
 
-namespace AdasIt.Andor.DomainQueries;
+namespace AdasIt.Andor.Configurations.DomainQueries;
 
 public record SearchConfigurationInput : SearchInput
 {
-    public string Name { get; set; }
-    public ConfigurationState[] States { get; set; }
+    public string Name { get; set; } = "";
+    public ConfigurationState[] States { get; set; } = [];
 }

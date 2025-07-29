@@ -1,5 +1,4 @@
 ﻿using AdasIt.Andor.Configurations.Domain.Events;
-using AdasIt.Andor.Configurations.Repository;
 using AdasIt.Andor.Infrastructure;
 using Akka.Actor;
 
@@ -72,7 +71,7 @@ public class ConfigurationCommandsInfrastructureSupervisor : ReceiveActor
 
     private static IActorRef GetActor(Guid id)
     {
-        var childName = $"configuration-commands-{id.ToString()}";
+        var childName = $"configuration-commands-{id}";
 
         var child = Context.Child(childName);
 

@@ -33,7 +33,8 @@ public static class ConfigurationFixture
             propertyValues.Add(nameof(Configuration.ExpireDate), @base.ExpireDate);
         }
 
-        return GeneralFixture.CreateInstanceAndSetProperties<Configuration>(propertyValues);
+        return Configuration.Load(ConfigurationId.New(), @base.Name, @base.Value,
+            @base.Description, @base.StartDate, @base.ExpireDate, userId.ToString(), DateTime.UtcNow);
     }
 
     public static Configuration GetValidConfiguration()
@@ -79,25 +80,25 @@ public static class ConfigurationFixture
         }
         else
         {
-            throw new ArgumentOutOfRangeException("Not state mapped");
+            throw new ArgumentOutOfRangeException(nameof(state), "Not state mapped");
         }
     }
 
-    public static DateTime GetValidExpireDate(ConfigurationState configuration)
+    public static DateTime GetValidExpireDate(ConfigurationState state)
     {
         DateTime currentTime = DateTime.UtcNow;
 
-        if (configuration == ConfigurationState.Awaiting || configuration == ConfigurationState.Active)
+        if (state == ConfigurationState.Awaiting || state == ConfigurationState.Active)
         {
             return currentTime.AddMonths(1);
         }
-        else if (configuration == ConfigurationState.Expired)
+        else if (state == ConfigurationState.Expired)
         {
             return currentTime.AddMonths(-1);
         }
         else
         {
-            throw new ArgumentOutOfRangeException();
+            throw new ArgumentOutOfRangeException(nameof(state), "Not state mapped");
         }
     }
 

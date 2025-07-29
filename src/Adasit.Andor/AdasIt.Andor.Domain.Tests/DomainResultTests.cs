@@ -93,14 +93,14 @@ public class DomainResultTests
     [Fact]
     public void Failure_WithEmptyErrors_ShouldTrhowException()
     {
-        var ex = Assert.Throws<ArgumentException>(() => DomainResult.Failure(new List<Notification>()));
+        var ex = Assert.Throws<ArgumentException>(() => DomainResult.Failure([]));
         Assert.Equal("Failure must contain at least one error notification.", ex.Message);
     }
 
     [Fact]
     public void Failure_WithNullErrors_ShouldTrhowException()
     {
-        var ex = Assert.Throws<ArgumentException>(() => DomainResult.Failure(null));
+        var ex = Assert.Throws<ArgumentException>(() => DomainResult.Failure(null!));
         Assert.Equal("Failure must contain at least one error notification.", ex.Message);
     }
 }

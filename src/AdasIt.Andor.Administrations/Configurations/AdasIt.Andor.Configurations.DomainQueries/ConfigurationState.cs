@@ -1,4 +1,4 @@
-﻿namespace AdasIt.Andor.DomainQueries;
+﻿namespace AdasIt.Andor.Configurations.DomainQueries;
 
 public record ConfigurationState(int Key, string Value)
 {

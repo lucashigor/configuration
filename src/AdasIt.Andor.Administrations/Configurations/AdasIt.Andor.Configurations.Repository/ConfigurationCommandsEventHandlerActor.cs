@@ -1,12 +1,12 @@
 ﻿using AdasIt.Andor.Configurations.Domain;
 using AdasIt.Andor.Configurations.Domain.Events;
 using AdasIt.Andor.Configurations.Domain.ValueObjects;
-using AdasIt.Andor.Configurations.Infrastructure.Config;
+using AdasIt.Andor.Configurations.InfrastructureCommands.Config;
 using Akka.Actor;
 using Akka.Persistence;
 using Mapster;
 
-namespace AdasIt.Andor.Configurations.Repository;
+namespace AdasIt.Andor.Configurations.InfrastructureCommands;
 public class ConfigurationCommandsEventHandlerActor : ReceivePersistentActor
 {
     private readonly Guid _configId;
