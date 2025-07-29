@@ -21,6 +21,8 @@ public static class DbContextOptionsFactory
 public class PrincipalContext(DbContextOptions options)
     : DbContext(options)
 {
+    public DbSet<ProcessedEvents> ProcessedEvents => Set<ProcessedEvents>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
@@ -33,7 +35,6 @@ public class PrincipalContext(DbContextOptions options)
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
-            // Soft delete
             if (typeof(ISoftDeletableEntity).IsAssignableFrom(entityType.ClrType))
             {
                 modelBuilder.Entity(entityType.ClrType)
@@ -43,13 +44,12 @@ public class PrincipalContext(DbContextOptions options)
                 entityType.AddSoftDeleteQueryFilter();
             }
 
-            // Forçar DateTime como UTC
             foreach (var property in entityType.GetProperties()
                          .Where(p => p.ClrType == typeof(DateTime) || p.ClrType == typeof(DateTime?)))
             {
                 var converter = new ValueConverter<DateTime, DateTime>(
-                    v => v.Kind == DateTimeKind.Utc ? v : DateTime.SpecifyKind(v, DateTimeKind.Utc), // To DB
-                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)); // From DB
+                    v => v.Kind == DateTimeKind.Utc ? v : DateTime.SpecifyKind(v, DateTimeKind.Utc),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
 
                 property.SetValueConverter(converter);
             }

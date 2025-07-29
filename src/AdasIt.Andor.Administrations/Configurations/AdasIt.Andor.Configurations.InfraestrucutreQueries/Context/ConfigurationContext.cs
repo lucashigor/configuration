@@ -19,6 +19,7 @@ public class ConfigurationContext
     public ConfigurationContext(DbContextOptions options) : base(options)
     {
     }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -28,6 +29,4 @@ public class ConfigurationContext
     }
 
     public DbSet<ConfigurationOutput> Configuration => Set<ConfigurationOutput>();
-    public DbSet<ProcessedEvents> ProcessedEvents => Set<ProcessedEvents>();
-
 }
