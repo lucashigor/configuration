@@ -1,45 +1,29 @@
-﻿using AdasIt.Andor.Configurations.Application.Actors;
+﻿using AdasIt.Andor.Configurations.Application.Actions;
+using AdasIt.Andor.Configurations.Application.Actors;
 using AdasIt.Andor.Configurations.Application.Interfaces;
+using AdasIt.Andor.Configurations.ApplicationDto;
 using AdasIt.Andor.Configurations.Domain;
+using AdasIt.Andor.Configurations.Domain.ValueObjects;
 using AdasIt.Andor.Configurations.DomainQueries;
-using AdasIt.Andor.Configurations.Dto;
 using AdasIt.Andor.Domain.ValuesObjects;
 using Akka.Actor;
 using Akka.Hosting;
 
 namespace AdasIt.Andor.Configurations.Application;
 
-public class ConfigurationCommandsService : IConfigurationCommandsService
+public class ConfigurationCommandsService(ActorRegistry registry) : IConfigurationCommandsService
 {
-    private readonly IActorRef _configActor;
+    private readonly IActorRef _configActor = registry.Get<ConfigurationManagerActor>();
 
-    private TimeSpan Timeout =>
-#if DEBUG
-        TimeSpan.FromHours(2);
-#else
-    TimeSpan.FromSeconds(5);
-#endif
-
-    public ConfigurationCommandsService(ActorRegistry registry)
+    public async Task<(DomainResult, ConfigurationOutput)> CreateConfigurationAsync(ConfigurationInput input, 
+        CancellationToken cancellationToken)
     {
-        _configActor = registry.Get<ConfigurationManagerActor>();
-    }
+        var command = CreateConfiguration.CreateInstance(input, cancellationToken);
+        
+        var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command, 
+            cancellationToken);
 
-    public async Task<(DomainResult, ConfigurationOutput)> CreateConfigurationAsync(CreateConfiguration command, CancellationToken cancellationToken)
-    {
-        var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command, cancellationToken);
-
-        return (result, new ConfigurationOutput()
-        {
-            Id = config.Id,
-            Name = config.Name,
-            Value = config.Value,
-            Description = config.Description,
-            CreatedAt = config.CreatedAt,
-            CreatedBy = config.CreatedBy,
-            ExpireDate = config.ExpireDate,
-            StartDate = config.StartDate,
-        });
+        return (result, config.ToConfigurationOutput());
     }
 
     public Task<DomainResult> DeleteConfigurationAsync(Guid configurationId, CancellationToken cancellationToken)
@@ -47,21 +31,19 @@ public class ConfigurationCommandsService : IConfigurationCommandsService
         throw new NotImplementedException();
     }
 
-    public async Task<(DomainResult, ConfigurationOutput)> UpdateConfigurationAsync(UpdateConfiguration command, CancellationToken cancellationToken)
+    public async Task<(DomainResult, ConfigurationOutput)> UpdateConfigurationAsync(ConfigurationId id, ConfigurationInput input, 
+        CancellationToken cancellationToken)
     {
+        var command = UpdateConfiguration.CreateInstance(id, input, cancellationToken);
+        
+        var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command, 
+            cancellationToken);
 
-        var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command, cancellationToken);
+        return (result, config.ToConfigurationOutput());
+    }
 
-        return (result, new ConfigurationOutput()
-        {
-            Id = config.Id,
-            Name = config.Name,
-            Value = config.Value,
-            Description = config.Description,
-            CreatedAt = config.CreatedAt,
-            CreatedBy = config.CreatedBy,
-            ExpireDate = config.ExpireDate,
-            StartDate = config.StartDate,
-        });
+    public Task<DomainResult> DeleteConfigurationAsync(ConfigurationId id, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

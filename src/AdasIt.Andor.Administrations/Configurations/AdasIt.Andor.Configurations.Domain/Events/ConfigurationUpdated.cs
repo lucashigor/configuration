@@ -4,21 +4,20 @@ namespace AdasIt.Andor.Configurations.Domain.Events;
 
 public record ConfigurationUpdated : DomainEvent
 {
-    public Guid Id { get; init; }
-    public string Name { get; init; } = "";
-    public string Value { get; init; } = "";
-    public string Description { get; init; } = "";
-    public DateTime StartDate { get; init; }
-    public DateTime? ExpireDate { get; init; }
+    public string Name { get; private init; } = "";
+    public string Value { get; private init; } = "";
+    public string Description { get; private init; } = "";
+    public DateTime StartDate { get; private init; }
+    public DateTime? ExpireDate { get; private init; }
 
-    public static ConfigurationUpdated FromConfiguration(Configuration Configuration)
+    public static ConfigurationUpdated FromConfiguration(Configuration configuration)
         => new ConfigurationUpdated() with
         {
-            Id = Configuration.Id,
-            Name = Configuration.Name,
-            Value = Configuration.Value,
-            Description = Configuration.Description,
-            StartDate = Configuration.StartDate,
-            ExpireDate = Configuration.ExpireDate
+            Id = configuration.Id,
+            Name = configuration.Name,
+            Value = configuration.Value,
+            Description = configuration.Description,
+            StartDate = configuration.StartDate,
+            ExpireDate = configuration.ExpireDate
         };
 }

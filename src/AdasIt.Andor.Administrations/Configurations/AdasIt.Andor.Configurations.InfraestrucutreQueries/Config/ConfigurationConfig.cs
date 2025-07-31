@@ -16,11 +16,11 @@ public class ConfigurationProjectionConfig : IEntityTypeConfiguration<Configurat
         entity.Property(k => k.CreatedBy).HasMaxLength(70);
 
         entity.Property(x => x.CreatedAt)
-    .HasColumnType("timestamp with time zone");
+            .HasColumnType("timestamp with time zone");
         entity.Property(x => x.StartDate)
-    .HasColumnType("timestamp with time zone");
+            .HasColumnType("timestamp with time zone");
         entity.Property(x => x.ExpireDate)
-    .HasColumnType("timestamp with time zone");
+            .HasColumnType("timestamp with time zone");
 
         entity.Ignore(k => k.State);
     }

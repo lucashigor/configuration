@@ -9,17 +9,17 @@ public class QueryHelper<TEntity, TEntityId>(PrincipalContext context)
     where TEntity : Entity<TEntityId>
     where TEntityId : IEquatable<TEntityId>
 {
-    protected readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
+    protected readonly DbSet<TEntity> DbSet = context.Set<TEntity>();
     protected Expression<Func<TEntity, bool>>? loggedUserFilter;
 
     public virtual async Task<TEntity?> GetByIdAsync(TEntityId id, CancellationToken cancellationToken)
-    => await _dbSet
+    => await DbSet
         .AsNoTracking()
         .FirstOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
 
     protected virtual IQueryable<TEntity> GetMany(Expression<Func<TEntity, bool>> where)
     {
-        var query = _dbSet.AsNoTracking();
+        var query = DbSet.AsNoTracking();
 
         if (loggedUserFilter is not null)
         {
@@ -36,43 +36,43 @@ public class QueryHelper<TEntity, TEntityId>(PrincipalContext context)
         int perPage,
         out int totalPages)
         => Extension.GetManyPaginated(
-            _dbSet, loggedUserFilter, [where], orderBy, order, page, perPage, null!, out totalPages);
+            DbSet, loggedUserFilter, [where], orderBy, order, page, perPage, null!, out totalPages);
 
-    protected virtual IQueryable<TEntity> GetManyPaginated(List<Expression<Func<TEntity, bool>>> where,
+    protected virtual IQueryable<TEntity> GetManyPaginated(List<Expression<Func<TEntity, bool>>>? where,
         string? orderBy,
         SearchOrder order,
         int page,
         int perPage,
         out int totalPages)
         => Extension.GetManyPaginated(
-            _dbSet, loggedUserFilter, where, orderBy, order, page, perPage, null!, out totalPages);
+            DbSet, loggedUserFilter, where, orderBy, order, page, perPage, null!, out totalPages);
 }
 
 public static class Extension
 {
     public static IQueryable<TEntity> GetManyPaginated<TDbSet, TEntity>(
-        TDbSet _dbSet,
+        TDbSet dbSet,
         Expression<Func<TEntity, bool>>? loggedUserFilter,
-        List<Expression<Func<TEntity, bool>>> where,
+        List<Expression<Func<TEntity, bool>>>? where,
         string? orderBy, SearchOrder order, int page, int perPage, out int totalPages)
         where TDbSet : DbSet<TEntity>
         where TEntity : class
     {
         return GetManyPaginated<DbSet<TEntity>, TEntity>(
-            _dbSet, loggedUserFilter, where, orderBy, order, page, perPage, null!, out totalPages);
+            dbSet, loggedUserFilter, where, orderBy, order, page, perPage, null!, out totalPages);
 
     }
 
     public static IQueryable<TEntity> GetManyPaginated<TDbSet, TEntity>(
-        TDbSet _dbSet,
+        TDbSet dbSet,
         Expression<Func<TEntity, bool>>? loggedUserFilter,
-        List<Expression<Func<TEntity, bool>>> where,
+        List<Expression<Func<TEntity, bool>>>? where,
         string? orderBy, SearchOrder order, int page, int perPage,
-        Expression<Func<TEntity, object>> include, out int totalPages)
+        Expression<Func<TEntity, object>>? include, out int totalPages)
         where TDbSet : DbSet<TEntity>
         where TEntity : class
     {
-        var query = _dbSet.AsNoTracking();
+        var query = dbSet.AsNoTracking();
 
         if (loggedUserFilter is not null)
         {
@@ -81,10 +81,7 @@ public static class Extension
 
         if (where != null)
         {
-            foreach (var item in where)
-            {
-                query = query.Where(item);
-            }
+            query = where.Aggregate(query, (current, item) => current.Where(item));
         }
 
         totalPages = query.Count();
@@ -115,7 +112,7 @@ public static class Extension
     }
 
     public static IQueryable<TOutput> GetManyPaginated<TOutput, TDbSet, TEntity>(
-        TDbSet _dbSet,
+        TDbSet dbSet,
         Expression<Func<TEntity, bool>>? loggedUserFilter,
         List<Expression<Func<TEntity, bool>>>? where,
         Dictionary<string, SearchOrder>? orderBy,
@@ -128,21 +125,11 @@ public static class Extension
     {
         IQueryable<TEntity> query;
 
-        if (loggedUserFilter is not null)
-        {
-            query = _dbSet.AsNoTracking().Where(loggedUserFilter);
-        }
-        else
-        {
-            query = _dbSet.AsNoTracking();
-        }
+        query = loggedUserFilter is not null ? dbSet.AsNoTracking().Where(loggedUserFilter) : dbSet.AsNoTracking();
 
         if (where != null && where.Count != 0)
         {
-            foreach (var item in where)
-            {
-                query = query.Where(item);
-            }
+            query = where.Aggregate(query, (current, item) => current.Where(item));
         }
 
         var queryProjected = query.Select(project);
@@ -175,7 +162,7 @@ public static class Extension
         return queryProjected;
     }
 
-    public static Expression<Func<TProp, object>> ToLambda<TProp>(string propertyName)
+    private static Expression<Func<TProp, object>> ToLambda<TProp>(string propertyName)
     {
         var parameter = Expression.Parameter(typeof(TProp));
         var property = Expression.Property(parameter, propertyName);

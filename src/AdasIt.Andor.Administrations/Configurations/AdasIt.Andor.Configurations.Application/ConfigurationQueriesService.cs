@@ -5,20 +5,15 @@ using AdasIt.Andor.DomainQueries.ResearchableRepository;
 
 namespace AdasIt.Andor.Configurations.Application;
 
-public class ConfigurationQueriesService : IConfigurationQueriesService
+public class ConfigurationQueriesService(
+    IQueriesConfigurationRepository<ConfigurationOutput> queriesConfigurationRepository)
+    : IConfigurationQueriesService
 {
-    private readonly IQueriesConfigurationRepository<ConfigurationOutput> _queriesConfigurationRepository;
-
-    public ConfigurationQueriesService(IQueriesConfigurationRepository<ConfigurationOutput> queriesConfigurationRepository)
-    {
-        _queriesConfigurationRepository = queriesConfigurationRepository;
-    }
-
     public Task<ConfigurationOutput?> GetByIdAsync(ConfigurationId id,
         CancellationToken cancellationToken)
-        => _queriesConfigurationRepository.GetByIdAsync(id, cancellationToken);
+        => queriesConfigurationRepository.GetByIdAsync(id, cancellationToken);
 
     public Task<SearchOutput<ConfigurationOutput>> SearchAsync(SearchConfigurationInput input,
         CancellationToken cancellationToken)
-        => _queriesConfigurationRepository.SearchAsync(input, cancellationToken);
+        => queriesConfigurationRepository.SearchAsync(input, cancellationToken);
 }

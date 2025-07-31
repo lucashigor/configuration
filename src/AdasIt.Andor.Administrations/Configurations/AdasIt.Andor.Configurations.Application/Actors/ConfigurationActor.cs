@@ -1,7 +1,8 @@
-﻿using AdasIt.Andor.Configurations.Domain;
+﻿using AdasIt.Andor.Configurations.Application.Actions;
+using AdasIt.Andor.Configurations.ApplicationDto;
+using AdasIt.Andor.Configurations.Domain;
 using AdasIt.Andor.Configurations.Domain.Repository;
 using AdasIt.Andor.Configurations.Domain.ValueObjects;
-using AdasIt.Andor.Configurations.Dto;
 using AdasIt.Andor.Domain.SeedWork.Repositories;
 using Akka.Actor;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,13 +44,12 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
         {
             var result = await _commandRepository.GetByIdAsync(_id, CancellationToken.None);
 
-            if (result != null)
-            {
-                _configuration = result;
+            if (result == null) return;
+            
+            _configuration = result;
 
-                Become(Ready);
-                ProcessStash();
-            }
+            Become(Ready);
+            ProcessStash();
         });
 
         ReceiveAsync<CreateConfiguration>(async cmd =>

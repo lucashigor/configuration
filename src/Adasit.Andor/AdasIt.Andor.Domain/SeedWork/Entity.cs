@@ -7,31 +7,21 @@ namespace AdasIt.Andor.Domain.SeedWork;
 
 public abstract class Entity<TEntityId> where TEntityId : IEquatable<TEntityId>, IId<TEntityId>
 {
-    public TEntityId Id { get; protected set; }
+    public TEntityId Id { get; protected init; } = TEntityId.New();
 
-    protected readonly ICollection<Notification> _notifications;
+    private readonly ICollection<Notification> _notifications = [];
     protected IReadOnlyCollection<Notification> Notifications => [.. _notifications];
 
-    protected readonly ICollection<Notification> _warnings;
+    private readonly ICollection<Notification> _warnings = [];
     protected IReadOnlyCollection<Notification> Warnings => [.. _warnings];
-
-    protected Entity()
-    {
-        Id = (TEntityId)TEntityId.New();
-        _notifications = [];
-        _warnings = [];
-    }
 
     protected virtual DomainResult Validate()
     {
         AddNotification(Id!.NotNull());
 
-        if (Notifications.Count != 0)
-        {
-            return DomainResult.Failure(errors: _notifications);
-        }
-
-        return DomainResult.Success(warnings: _warnings);
+        return Notifications.Count != 0 
+            ? DomainResult.Failure(errors: _notifications) 
+            : DomainResult.Success(warnings: _warnings);
     }
 
     protected void AddNotification(List<Notification> notifications)
@@ -60,5 +50,4 @@ public abstract class Entity<TEntityId> where TEntityId : IEquatable<TEntityId>,
 
     protected void AddWarning(string fieldName, string message, DomainErrorCode domainError)
         => AddWarning(new(fieldName, message, domainError));
-
 }

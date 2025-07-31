@@ -4,11 +4,9 @@ namespace AdasIt.Andor.Configurations.Domain.Events;
 
 public record ConfigurationDeleted : DomainEvent
 {
-    public Guid Id { get; init; }
-
-    public static ConfigurationDeleted FromConfiguration(Configuration Configuration)
+    public static ConfigurationDeleted FromConfiguration(Configuration configuration)
         => new ConfigurationDeleted() with
         {
-            Id = Configuration.Id
+            Id = configuration.Id
         };
 }

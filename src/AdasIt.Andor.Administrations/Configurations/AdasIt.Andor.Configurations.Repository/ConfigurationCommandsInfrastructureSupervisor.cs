@@ -1,4 +1,5 @@
 ﻿using AdasIt.Andor.Configurations.Domain.Events;
+using AdasIt.Andor.Domain.Events;
 using AdasIt.Andor.Infrastructure;
 using Akka.Actor;
 
@@ -12,33 +13,13 @@ public class ConfigurationCommandsInfrastructureSupervisor : ReceiveActor
     {
         _eventPublisher = eventPublisher;
 
-        Receive<ConfigurationCreated>(cmd =>
-        {
-            IActorRef child = GetActor(cmd.Id);
+        Receive<ConfigurationCreated>(Handler);
 
-            child.Forward(cmd);
-        });
+        Receive<ConfigurationDeactivated>(Handler);
 
-        Receive<ConfigurationDeactivated>(cmd =>
-        {
-            IActorRef child = GetActor(cmd.Id);
+        Receive<ConfigurationDeleted>(Handler);
 
-            child.Forward(cmd);
-        });
-
-        Receive<ConfigurationDeleted>(cmd =>
-        {
-            IActorRef child = GetActor(cmd.Id);
-
-            child.Forward(cmd);
-        });
-
-        Receive<ConfigurationUpdated>(cmd =>
-        {
-            IActorRef child = GetActor(cmd.Id);
-
-            child.Forward(cmd);
-        });
+        Receive<ConfigurationUpdated>(Handler);
 
         Receive<LoadConfiguration>(cmd =>
         {
@@ -46,36 +27,27 @@ public class ConfigurationCommandsInfrastructureSupervisor : ReceiveActor
 
             child.Forward(cmd);
         });
-
-        Receive<object>(evt =>
-        {
-            switch (evt)
-            {
-                case ConfigurationCreated created:
-                case ConfigurationUpdated updated:
-                case ConfigurationDeactivated deactivated:
-                case ConfigurationDeleted deleted:
-                    Self.Tell(evt);
-                    break;
-
-                default:
-                    break;
-            }
-        });
     }
 
     protected override void PreStart()
     {
         _eventPublisher.SubscribeAsync(Self.Tell, CancellationToken.None).GetAwaiter().GetResult();
     }
+    
+    private static void Handler(DomainEvent cmd)
+    {
+        var child = GetActor(cmd.Id);
 
+        child.Forward(cmd);
+    }
+    
     private static IActorRef GetActor(Guid id)
     {
-        var childName = $"configuration-commands-{id}";
+        var childName = $"{nameof(ConfigurationCommandsEventHandlerActor)}-{id}";
 
         var child = Context.Child(childName);
 
-        if (child == ActorRefs.Nobody)
+        if (child.Equals(ActorRefs.Nobody))
         {
             child = Context.ActorOf(Props.Create(() =>
                         new ConfigurationCommandsEventHandlerActor(id)), childName);

@@ -32,7 +32,7 @@ public class QueriesConfigurationRepository(ConfigurationContext context) :
     public async Task<List<ConfigurationOutput>?> GetByNameAndStatusAsync(SearchConfigurationInput search,
         CancellationToken cancellationToken)
     {
-        var query = _dbSet.AsNoTracking();
+        var query = DbSet.AsNoTracking();
         query = GetWhere(query, search);
 
         return await query.ToListAsync(cancellationToken);
@@ -40,7 +40,7 @@ public class QueriesConfigurationRepository(ConfigurationContext context) :
 
     public async Task<ConfigurationOutput?> GetActiveByNameAsync(string name, CancellationToken cancellationToken)
     {
-        var query = _dbSet.AsNoTracking();
+        var query = DbSet.AsNoTracking();
         query = GetWhere(query, new SearchConfigurationInput() { Name = name, States = [ConfigurationState.Active] });
 
         return await query.FirstOrDefaultAsync(cancellationToken);

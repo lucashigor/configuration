@@ -2,5 +2,5 @@
 
 public record Entity<TEntityKey> where TEntityKey : IEquatable<TEntityKey>
 {
-    public required TEntityKey Id { get; set; }
+    public required TEntityKey Id { get; init; }
 }

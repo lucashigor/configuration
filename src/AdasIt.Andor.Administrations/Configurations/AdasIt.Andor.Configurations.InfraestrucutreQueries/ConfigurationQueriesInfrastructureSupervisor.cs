@@ -1,6 +1,6 @@
-﻿using AdasIt.Andor.Configurations.Domain.Events;
+﻿using AdasIt.Andor.Configurations.ApplicationDto;
+using AdasIt.Andor.Configurations.Domain.Events;
 using AdasIt.Andor.Configurations.DomainQueries;
-using AdasIt.Andor.Configurations.Dto;
 using AdasIt.Andor.Configurations.InfrastructureQueries.Context;
 using AdasIt.Andor.Infrastructure;
 using AdasIt.Andor.InfrastructureQueries;
@@ -13,42 +13,16 @@ namespace AdasIt.Andor.Configurations.InfrastructureQueries;
 public class ConfigurationQueriesInfrastructureSupervisor : ReceiveActor
 {
     private readonly IEventPublisher _eventPublisher;
-    private readonly IServiceProvider _serviceProvider;
-
-    private readonly string ProjectionName = "ConfigurationBasicProjection";
+    private const string _projectionName = "ConfigurationBasicProjection";
 
     public ConfigurationQueriesInfrastructureSupervisor(IEventPublisher eventPublisher,
         IServiceProvider serviceProvider)
     {
         _eventPublisher = eventPublisher;
-        _serviceProvider = serviceProvider;
-
-        ReceiveAsync<GetConfiguration>(async cmd =>
-        {
-            using var scope = _serviceProvider.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<ConfigurationContext>();
-
-            var entity = await db.Configuration
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id.Equals(cmd.Id));
-
-            if (entity == null)
-            {
-                Sender.Tell(null);
-
-                return;
-            }
-
-            var state = Domain.Configuration.GetStatus(false, entity.StartDate, entity.ExpireDate);
-
-            entity.State = new DomainQueries.ConfigurationState(state.Key, state.Name);
-
-            Sender.Tell(entity);
-        });
-
+            
         ReceiveAsync<ConfigurationCreated>(cmd => GenericHandleEventAsync.HandleEventAsync<ConfigurationContext>(
-            ProjectionName,
-            _serviceProvider,
+            _projectionName,
+            serviceProvider,
             cmd.Id, cmd.EventId, db =>
         {
             var entity = new ConfigurationOutput
@@ -69,8 +43,8 @@ public class ConfigurationQueriesInfrastructureSupervisor : ReceiveActor
         }));
 
         ReceiveAsync<ConfigurationDeactivated>(cmd => GenericHandleEventAsync.HandleEventAsync<ConfigurationContext>(
-            ProjectionName,
-            _serviceProvider,
+            _projectionName,
+            serviceProvider,
             cmd.Id, cmd.EventId, db =>
         {
             var entity = db.Configuration.FirstOrDefault(x => x.Id == cmd.Id);
@@ -84,8 +58,8 @@ public class ConfigurationQueriesInfrastructureSupervisor : ReceiveActor
         }));
 
         ReceiveAsync<ConfigurationDeleted>(cmd => GenericHandleEventAsync.HandleEventAsync<ConfigurationContext>(
-            ProjectionName,
-            _serviceProvider,
+            _projectionName,
+            serviceProvider,
             cmd.Id, cmd.EventId, db =>
         {
             var entity = db.Configuration.FirstOrDefault(x => x.Id == cmd.Id);
@@ -99,8 +73,8 @@ public class ConfigurationQueriesInfrastructureSupervisor : ReceiveActor
 
 
         ReceiveAsync<ConfigurationUpdated>(cmd => GenericHandleEventAsync.HandleEventAsync<ConfigurationContext>(
-            ProjectionName,
-            _serviceProvider,
+            _projectionName,
+            serviceProvider,
             cmd.Id, cmd.EventId, db =>
         {
             var entity = db.Configuration.FirstOrDefault(x => x.Id == cmd.Id);

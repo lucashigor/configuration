@@ -8,12 +8,12 @@ builder.Services.AddControllers();
 
 builder.Services.UseConfigurations(builder.Configuration);
 
-builder.Services.AddAkka("MySystem", (builder, provider) =>
+builder.Services.AddAkka("MySystem", (akkaConfigurationBuilder, provider) =>
 {
     var modules = provider.GetServices<IAkkaModule>();
     foreach (var module in modules)
     {
-        module.Configure(builder, provider);
+        module.Configure(akkaConfigurationBuilder, provider);
     }
 });
 

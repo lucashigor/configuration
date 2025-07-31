@@ -1,53 +1,41 @@
 ﻿using AdasIt.Andor.Configurations.Application.Interfaces;
-using AdasIt.Andor.Configurations.Dto;
+using AdasIt.Andor.Configurations.ApplicationDto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdasIt.Andor.Configurations.WebApi;
 
 [ApiController]
 [Route("api/configurations")]
-public class ConfigurationController : ControllerBase
+public class ConfigurationController(
+    IConfigurationCommandsService configurationCommands,
+    IConfigurationQueriesService configurationQueries)
+    : ControllerBase
 {
-    private readonly IConfigurationCommandsService _configurationCommands;
-    private readonly IConfigurationQueriesService _configurationQueries;
-
-    public ConfigurationController(IConfigurationCommandsService configurationCommands, IConfigurationQueriesService configurationQueries)
-    {
-        _configurationCommands = configurationCommands;
-        _configurationQueries = configurationQueries;
-    }
-
-    [HttpGet]
-    public IActionResult TaBala()
-    {
-        return Ok("My First Heading!");
-    }
-
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetConfigurationAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var config = await _configurationQueries.GetByIdAsync(id, cancellationToken);
+        var config = await configurationQueries.GetByIdAsync(id, cancellationToken);
 
         return Ok(config);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateConfiguration command, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromBody] ConfigurationInput input, CancellationToken cancellationToken)
     {
-        var (_, config) = await _configurationCommands.CreateConfigurationAsync(command, cancellationToken);
+        var (_, config) = 
+            await configurationCommands.CreateConfigurationAsync(input, cancellationToken);
 
         return Ok(config);
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateConfiguration command, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(
+        [FromRoute] Guid id, 
+        [FromBody] ConfigurationInput input, 
+        CancellationToken cancellationToken)
     {
-        if (id != command.Id)
-        {
-            return BadRequest("Configuration ID in the route does not match the ID in the command.");
-        }
-
-        var (_, config) = await _configurationCommands.UpdateConfigurationAsync(command, cancellationToken);
+        var (_, config) = 
+            await configurationCommands.UpdateConfigurationAsync(id, input, cancellationToken);
 
         return Ok(config);
     }

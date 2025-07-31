@@ -14,7 +14,7 @@ namespace AdasIt.Andor.InfrastructureQueries
             using var scope = serviceProvider.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<T>();
 
-            if (db.ProcessedEvents.Find(id, eventId, projectionName) != null)
+            if (await db.ProcessedEvents.FindAsync(id, eventId, projectionName) != null)
                 return;
 
             var strategy = db.Database.CreateExecutionStrategy();
