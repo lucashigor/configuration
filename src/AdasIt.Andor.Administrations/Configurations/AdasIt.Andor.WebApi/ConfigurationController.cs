@@ -34,9 +34,9 @@ public class ConfigurationController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateConfiguration command, CancellationToken cancellationToken)
     {
-        await _configurationCommands.CreateConfigurationAsync(command, cancellationToken);
+        var (_, config) = await _configurationCommands.CreateConfigurationAsync(command, cancellationToken);
 
-        return Accepted();
+        return Ok(config);
     }
 
     [HttpPut("{id:guid}")]
@@ -47,8 +47,8 @@ public class ConfigurationController : ControllerBase
             return BadRequest("Configuration ID in the route does not match the ID in the command.");
         }
 
-        await _configurationCommands.UpdateConfigurationAsync(command, cancellationToken);
+        var (_, config) = await _configurationCommands.UpdateConfigurationAsync(command, cancellationToken);
 
-        return Accepted();
+        return Ok(config);
     }
 }

@@ -1,6 +1,9 @@
 ﻿using AdasIt.Andor.Configurations.Application.Actors;
 using AdasIt.Andor.Configurations.Application.Interfaces;
+using AdasIt.Andor.Configurations.Domain;
+using AdasIt.Andor.Configurations.DomainQueries;
 using AdasIt.Andor.Configurations.Dto;
+using AdasIt.Andor.Domain.ValuesObjects;
 using Akka.Actor;
 using Akka.Hosting;
 
@@ -22,26 +25,43 @@ public class ConfigurationCommandsService : IConfigurationCommandsService
         _configActor = registry.Get<ConfigurationManagerActor>();
     }
 
-    public Task CreateConfigurationAsync(CreateConfiguration command, CancellationToken cancellationToken)
+    public async Task<(DomainResult, ConfigurationOutput)> CreateConfigurationAsync(CreateConfiguration command, CancellationToken cancellationToken)
     {
-        command.CancellationToken = cancellationToken;
+        var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command, cancellationToken);
 
-        _configActor.Tell(command);
-
-        return Task.CompletedTask;
+        return (result, new ConfigurationOutput()
+        {
+            Id = config.Id,
+            Name = config.Name,
+            Value = config.Value,
+            Description = config.Description,
+            CreatedAt = config.CreatedAt,
+            CreatedBy = config.CreatedBy,
+            ExpireDate = config.ExpireDate,
+            StartDate = config.StartDate,
+        });
     }
 
-    public Task DeleteConfigurationAsync(Guid configurationId, CancellationToken cancellationToken)
+    public Task<DomainResult> DeleteConfigurationAsync(Guid configurationId, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public Task UpdateConfigurationAsync(UpdateConfiguration command, CancellationToken cancellationToken)
+    public async Task<(DomainResult, ConfigurationOutput)> UpdateConfigurationAsync(UpdateConfiguration command, CancellationToken cancellationToken)
     {
-        command.CancellationToken = cancellationToken;
 
-        _configActor.Tell(command);
+        var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command, cancellationToken);
 
-        return Task.CompletedTask;
+        return (result, new ConfigurationOutput()
+        {
+            Id = config.Id,
+            Name = config.Name,
+            Value = config.Value,
+            Description = config.Description,
+            CreatedAt = config.CreatedAt,
+            CreatedBy = config.CreatedBy,
+            ExpireDate = config.ExpireDate,
+            StartDate = config.StartDate,
+        });
     }
 }

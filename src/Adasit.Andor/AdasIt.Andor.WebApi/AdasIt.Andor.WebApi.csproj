@@ -16,7 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Application\AdasIt.Andor.Configurations.Application.csproj" />
     <ProjectReference Include="..\..\AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Domain\AdasIt.Andor.Configurations.Domain.csproj" />
-    <ProjectReference Include="..\..\AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.WebApi\AdasIt.Andor.Configurations.WebApi.csproj" />
+    <ProjectReference Include="..\..\AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Ioc\AdasIt.Andor.Configurations.Ioc.csproj" />
   </ItemGroup>
 
 </Project>

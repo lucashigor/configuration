@@ -54,11 +54,6 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
 
         ReceiveAsync<CreateConfiguration>(async cmd =>
         {
-            if (cmd.CancellationToken.IsCancellationRequested)
-            {
-                return;
-            }
-
             var (result, config) = Configuration.New(
                 _id,
                 cmd.Name,
@@ -69,9 +64,9 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
                 Guid.NewGuid().ToString(),
                 _validator);
 
-            if (!cmd.CancellationToken.IsCancellationRequested && config != null && config.Events.Any())
+            if (config != null && config.Events.Any())
             {
-                await _commandRepository.PersistAsync(config, cmd.CancellationToken);
+                await _commandRepository.PersistAsync(config, CancellationToken.None);
             }
 
             _configuration = config;

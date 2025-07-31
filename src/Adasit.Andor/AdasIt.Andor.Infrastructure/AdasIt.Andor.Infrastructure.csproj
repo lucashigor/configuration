@@ -9,4 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AdasIt.Andor.Domain\AdasIt.Andor.Domain.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Akka.Hosting" />
+  </ItemGroup>
 </Project>

@@ -48,6 +48,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.cspell.json = .cspell.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Configurations.Ioc", "AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Ioc\AdasIt.Andor.Configurations.Ioc.csproj", "{ACE04259-4D9D-DBBC-5FD5-CC4E6810D756}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +116,10 @@ Global
 		{3503C0A0-00B6-4B82-9BEF-A0194765A531}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3503C0A0-00B6-4B82-9BEF-A0194765A531}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3503C0A0-00B6-4B82-9BEF-A0194765A531}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACE04259-4D9D-DBBC-5FD5-CC4E6810D756}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACE04259-4D9D-DBBC-5FD5-CC4E6810D756}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACE04259-4D9D-DBBC-5FD5-CC4E6810D756}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACE04259-4D9D-DBBC-5FD5-CC4E6810D756}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -137,6 +143,7 @@ Global
 		{9A74112F-9D81-4D55-8D78-F6EF08962624} = {44779621-AF01-4B3D-91F2-CACEBDA86140}
 		{FA5F6CED-6F9D-463E-A9F7-8AB864F8182B} = {44779621-AF01-4B3D-91F2-CACEBDA86140}
 		{3503C0A0-00B6-4B82-9BEF-A0194765A531} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{ACE04259-4D9D-DBBC-5FD5-CC4E6810D756} = {44779621-AF01-4B3D-91F2-CACEBDA86140}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2EEA65CF-3488-4AA6-8587-AF18FF18472A}

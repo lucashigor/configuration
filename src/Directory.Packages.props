@@ -4,22 +4,22 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-	<PackageVersion Include="FluentAssertions" Version="8.4.0" />
+    <PackageVersion Include="FluentAssertions" Version="8.4.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.7" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageVersion Include="xunit" Version="2.5.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.3" />
-	
     <PackageVersion Include="Akka" Version="1.5.46" />
     <PackageVersion Include="Akka.Hosting" Version="1.5.44" />
     <PackageVersion Include="Akka.Persistence" Version="1.5.20" />
     <PackageVersion Include="Akka.Persistence.PostgreSql" Version="1.5.20" />
     <PackageVersion Include="Bogus" Version="35.6.3" />
-	<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
     <PackageVersion Include="Mapster" Version="7.4.0" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.18" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
-  
   </ItemGroup>
 </Project>

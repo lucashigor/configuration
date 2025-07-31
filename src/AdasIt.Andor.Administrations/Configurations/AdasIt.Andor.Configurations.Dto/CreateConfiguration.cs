@@ -8,5 +8,4 @@ public record CreateConfiguration(
     DateTime? ExpireDate)
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public CancellationToken CancellationToken { get; set; } = default;
 }
