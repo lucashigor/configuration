@@ -4,7 +4,6 @@ namespace AdasIt.Andor.Configurations.Domain.Events;
 
 public record ConfigurationCreated : DomainEvent
 {
-    public Guid Id { get; init; }
     public string Name { get; init; } = "";
     public string Value { get; init; } = "";
     public string Description { get; init; } = "";

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -11,9 +11,11 @@
     <PackageReference Include="Akka.Hosting" />
     <PackageReference Include="Akka.Persistence" />
     <PackageReference Include="Akka.Persistence.PostgreSql" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Adasit.Andor\Adasit.Andor.Api\Adasit.Andor.Api.csproj" />
     <ProjectReference Include="..\..\..\Adasit.Andor\AdasIt.Andor.Domain\AdasIt.Andor.Domain.csproj" />
     <ProjectReference Include="..\AdasIt.Andor.Configurations.Application\AdasIt.Andor.Configurations.Application.csproj" />
     <ProjectReference Include="..\AdasIt.Andor.Configurations.Dto\AdasIt.Andor.Configurations.ApplicationDto.csproj" />

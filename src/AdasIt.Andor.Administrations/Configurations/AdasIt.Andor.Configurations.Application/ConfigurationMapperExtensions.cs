@@ -3,7 +3,7 @@ using AdasIt.Andor.Configurations.DomainQueries;
 
 namespace AdasIt.Andor.Configurations.Application;
 
-public static class ConfigurationMapperExtensions
+internal static class ConfigurationMapperExtensions
 {
     public static ConfigurationOutput ToConfigurationOutput(this Configuration config)
         => new ConfigurationOutput()
@@ -16,5 +16,6 @@ public static class ConfigurationMapperExtensions
             CreatedBy = config.CreatedBy,
             ExpireDate = config.ExpireDate,
             StartDate = config.StartDate,
+            State = new ConfigurationState(config.State.Key, config.State.Name)
         };
 }

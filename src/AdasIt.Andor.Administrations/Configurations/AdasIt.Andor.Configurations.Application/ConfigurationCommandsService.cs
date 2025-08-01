@@ -1,4 +1,5 @@
-﻿using AdasIt.Andor.Configurations.Application.Actions;
+﻿using AdasIt.Andor.ApplicationDto;
+using AdasIt.Andor.Configurations.Application.Actions;
 using AdasIt.Andor.Configurations.Application.Actors;
 using AdasIt.Andor.Configurations.Application.Interfaces;
 using AdasIt.Andor.Configurations.ApplicationDto;
@@ -15,35 +16,42 @@ public class ConfigurationCommandsService(ActorRegistry registry) : IConfigurati
 {
     private readonly IActorRef _configActor = registry.Get<ConfigurationManagerActor>();
 
-    public async Task<(DomainResult, ConfigurationOutput)> CreateConfigurationAsync(ConfigurationInput input, 
+    public async Task<ApplicationResult<ConfigurationOutput>> CreateConfigurationAsync(ConfigurationInput input,
         CancellationToken cancellationToken)
     {
         var command = CreateConfiguration.CreateInstance(input, cancellationToken);
-        
-        var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command, 
-            cancellationToken);
 
-        return (result, config.ToConfigurationOutput());
+        return await Handler(command, cancellationToken);
     }
 
-    public Task<DomainResult> DeleteConfigurationAsync(Guid configurationId, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<(DomainResult, ConfigurationOutput)> UpdateConfigurationAsync(ConfigurationId id, ConfigurationInput input, 
+    public async Task<ApplicationResult<ConfigurationOutput>> UpdateConfigurationAsync(ConfigurationId id, ConfigurationInput input,
         CancellationToken cancellationToken)
     {
         var command = UpdateConfiguration.CreateInstance(id, input, cancellationToken);
-        
-        var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command, 
-            cancellationToken);
-
-        return (result, config.ToConfigurationOutput());
+        return await Handler(command, cancellationToken);
     }
 
-    public Task<DomainResult> DeleteConfigurationAsync(ConfigurationId id, CancellationToken cancellationToken)
+    public Task<ApplicationResult<object>> DeleteConfigurationAsync(ConfigurationId id, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
+    }
+
+
+    private async Task<ApplicationResult<ConfigurationOutput>> Handler(object command, CancellationToken cancellationToken)
+    {
+        var response = ApplicationResult<ConfigurationOutput>.Success();
+
+        var (result, config) = await _configActor.Ask<(DomainResult, Configuration)>(command,
+            cancellationToken);
+
+        if (result.IsFailure)
+        {
+            await HandleConfigurationResult.HandleResultConfiguration(result, response);
+            return response;
+        }
+
+        response.SetData(config.ToConfigurationOutput());
+
+        return response;
     }
 }

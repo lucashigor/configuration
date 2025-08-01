@@ -4,7 +4,6 @@ namespace AdasIt.Andor.Configurations.Domain.Events;
 
 public record ConfigurationDeactivated : DomainEvent
 {
-    public Guid Id { get; init; }
     public DateTime? ExpireDate { get; init; }
 
     public static ConfigurationDeactivated FromConfiguration(Configuration Configuration)
