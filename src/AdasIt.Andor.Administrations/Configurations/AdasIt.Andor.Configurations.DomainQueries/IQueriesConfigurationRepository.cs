@@ -2,13 +2,13 @@
 
 namespace AdasIt.Andor.Configurations.DomainQueries;
 
-public interface IQueriesConfigurationRepository<TOutput> :
-    IResearchableRepository<TOutput, Guid, SearchConfigurationInput>
+public interface IQueriesConfigurationRepository :
+    IResearchableRepository<ConfigurationOutput, Guid, SearchConfigurationInput>
 {
-    Task<List<TOutput>?> GetByNameAndStatusAsync(SearchConfigurationInput search,
+    Task<List<ConfigurationOutput>?> GetByNameAndStatesAsync(SearchConfigurationInput search,
         CancellationToken cancellationToken);
 
-    Task<TOutput?> GetActiveByNameAsync(string name,
+    Task<ConfigurationOutput?> GetActiveByNameAsync(string name,
         CancellationToken cancellationToken);
 }
 

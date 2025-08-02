@@ -6,7 +6,7 @@ using AdasIt.Andor.DomainQueries.ResearchableRepository;
 namespace AdasIt.Andor.Configurations.Application;
 
 public class ConfigurationQueriesService(
-    IQueriesConfigurationRepository<ConfigurationOutput> queriesConfigurationRepository)
+    IQueriesConfigurationRepository queriesConfigurationRepository)
     : IConfigurationQueriesService
 {
     public Task<ConfigurationOutput?> GetByIdAsync(ConfigurationId id,

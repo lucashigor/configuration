@@ -7,6 +7,10 @@
     <UserSecretsId>b78d698e-637a-49df-b574-d23698013bf0</UserSecretsId>
   </PropertyGroup>
 
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+	
   <ItemGroup>
     <PackageReference Include="Akka.Hosting" />
     <PackageReference Include="Akka.Persistence" />
@@ -19,7 +23,6 @@
     <ProjectReference Include="..\..\AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Domain\AdasIt.Andor.Configurations.Domain.csproj" />
     <ProjectReference Include="..\..\AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Ioc\AdasIt.Andor.Configurations.Ioc.csproj" />
     <ProjectReference Include="..\AdasIt.Andor.ApplicationDto\AdasIt.Andor.ApplicationDto.csproj" />
-    <ProjectReference Include="..\Auth\Adasit.Andor.Auth\Adasit.Andor.Auth.csproj" />
     <ProjectReference Include="..\HealthCheck\Andor.Adasit.HealthCheck\Andor.Adasit.HealthCheck.csproj" />
     <ProjectReference Include="..\Logging\OpenTelemetry\AdasIt.Andor.OpenTelemetry.csproj" />
     <ProjectReference Include="..\Swagger\AdasIt.Andor.Swagger\AdasIt.Andor.Swagger.csproj" />

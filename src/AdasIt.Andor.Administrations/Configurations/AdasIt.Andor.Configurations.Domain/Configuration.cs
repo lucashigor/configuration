@@ -37,17 +37,19 @@ public class Configuration : AggregateRoot<ConfigurationId>
         CreatedAt = createdAt;
     }
 
-    public static (DomainResult, Configuration?) New(
+    public static Task<(DomainResult, Configuration?)> NewAsync(
         string name,
         string value,
         string description,
         DateTime startDate,
         DateTime? expireDate,
         string userId,
-        IConfigurationValidator configurationValidator)
-        => New(ConfigurationId.New(), name, value, description, startDate, expireDate, userId, configurationValidator);
+        IConfigurationValidator configurationValidator,
+        CancellationToken cancellationToken)
+        => NewAsync(ConfigurationId.New(), name, value, description, startDate, expireDate, userId, configurationValidator
+            , cancellationToken);
 
-    public static (DomainResult, Configuration?) New(
+    public static async Task<(DomainResult, Configuration?)> NewAsync(
         ConfigurationId Id,
         string name,
         string value,
@@ -55,7 +57,8 @@ public class Configuration : AggregateRoot<ConfigurationId>
         DateTime startDate,
         DateTime? expireDate,
         string userId,
-        IConfigurationValidator configurationValidator)
+        IConfigurationValidator configurationValidator,
+        CancellationToken cancellationToken)
     {
         var entity = new Configuration(
             Id,
@@ -67,7 +70,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
             userId,
             DateTime.UtcNow);
 
-        var notifications = configurationValidator.ValidateCreation(name, value, description, startDate, expireDate);
+        var notifications = await configurationValidator.ValidateCreationAsync(name, value, description, startDate, expireDate, cancellationToken);
 
         entity.AddNotification(notifications);
 
@@ -122,10 +125,11 @@ public class Configuration : AggregateRoot<ConfigurationId>
     }
 
     #region Update
-    public DomainResult Update(string name, string value, string description, DateTime startDate, DateTime? expireDate,
-        IConfigurationValidator configurationValidator)
+    public async Task<DomainResult> UpdateAsync(string name, string value, string description, DateTime startDate, DateTime? expireDate,
+        IConfigurationValidator configurationValidator, CancellationToken cancellationToken)
     {
-        var notifications = configurationValidator.ValidateUpdate(this, name, value, description, startDate, expireDate);
+        var notifications = await configurationValidator.ValidateUpdateAsync(this, name, value, description, startDate, expireDate,
+            cancellationToken);
 
         AddNotification(notifications);
 
@@ -149,7 +153,8 @@ public class Configuration : AggregateRoot<ConfigurationId>
 
     #endregion
 
-    public DomainResult Deactivate(IConfigurationValidator configurationValidator)
+    public async Task<DomainResult> DeactivateAsync(IConfigurationValidator configurationValidator,
+        CancellationToken cancellationToken)
     {
         if (State == ConfigurationState.Expired)
         {
@@ -160,7 +165,8 @@ public class Configuration : AggregateRoot<ConfigurationId>
 
         if (State == ConfigurationState.Active)
         {
-            Update(Name, Value, Description, StartDate, DateTime.UtcNow, configurationValidator);
+            await UpdateAsync(Name, Value, Description, StartDate, DateTime.UtcNow, configurationValidator,
+                cancellationToken);
 
             AddWarning(nameof(ExpireDate),
                 "expire date set to today",

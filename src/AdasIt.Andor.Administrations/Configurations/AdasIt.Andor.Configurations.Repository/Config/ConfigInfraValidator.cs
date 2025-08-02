@@ -7,13 +7,13 @@ internal class ConfigInfraValidator : IConfigurationValidator
 {
     private readonly List<Notification> _notifications = new();
 
-    public List<Notification> ValidateCreation(string name, string value, string description, DateTime startDate, DateTime? expireDate)
+    public Task<List<Notification>> ValidateCreationAsync(string name, string value, string description, DateTime startDate, DateTime? expireDate, CancellationToken cancellationToken)
     {
-        return _notifications;
+        return Task.FromResult(_notifications);
     }
 
-    public List<Notification> ValidateUpdate(Configuration existing, string name, string value, string description, DateTime startDate, DateTime? expireDate)
+    public Task<List<Notification>> ValidateUpdateAsync(Configuration existing, string name, string value, string description, DateTime startDate, DateTime? expireDate, CancellationToken cancellationToken)
     {
-        return _notifications;
+        return Task.FromResult(_notifications);
     }
 }

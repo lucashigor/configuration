@@ -73,15 +73,7 @@ public static class JwtAuthenticationMiddleware
                     context.Response.StatusCode = 401;
                     context.Response.ContentType = "text/plain";
 
-#if DEBUG
-                    // Em modo DEBUG, exibe detalhes do erro
-                    return context.Response.WriteAsync(
-                        $"Authentication failed: {context.Exception.Message}\n{context.Exception.StackTrace}"
-                    );
-#else
-        // Em produção, mantém uma mensagem genérica
-        return context.Response.WriteAsync("An error occurred processing your authentication.");
-#endif
+                    return context.Response.WriteAsync("An error occurred processing your authentication.");
                 }
             };
         });

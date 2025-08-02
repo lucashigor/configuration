@@ -20,7 +20,7 @@ internal static class InfrastructureIoc
 
         services.AddSingleton<IEventPublisher, InMemoryEventPublisher>();
 
-        services.AddScoped<IQueriesConfigurationRepository<ConfigurationOutput>,
+        services.AddScoped<IQueriesConfigurationRepository,
             QueriesConfigurationRepository>();
 
         services.AddSingleton<ICommandsConfigurationRepository>(sp =>

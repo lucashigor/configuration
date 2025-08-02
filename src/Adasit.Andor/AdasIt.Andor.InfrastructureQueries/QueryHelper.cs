@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace AdasIt.Andor.InfrastructureQueries;
 
-public class QueryHelper<TEntity, TEntityId>(PrincipalContext context)
+public class QueryHelper<TEntity, TEntityId>(DbContext context)
     where TEntity : Entity<TEntityId>
     where TEntityId : IEquatable<TEntityId>
 {

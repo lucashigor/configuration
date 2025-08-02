@@ -9,7 +9,7 @@ namespace AdasIt.Andor.Configurations.InfrastructureQueries;
 
 public class QueriesConfigurationRepository(ConfigurationContext context) :
     QueryHelper<ConfigurationOutput, Guid>(context),
-    IQueriesConfigurationRepository<ConfigurationOutput>
+    IQueriesConfigurationRepository
 {
     public Task<SearchOutput<ConfigurationOutput>> SearchAsync(SearchConfigurationInput input, CancellationToken cancellationToken)
     {
@@ -29,7 +29,7 @@ public class QueriesConfigurationRepository(ConfigurationContext context) :
         return Task.FromResult(new SearchOutput<ConfigurationOutput>(input.Page, input.PerPage, total, items!));
     }
 
-    public async Task<List<ConfigurationOutput>?> GetByNameAndStatusAsync(SearchConfigurationInput search,
+    public async Task<List<ConfigurationOutput>?> GetByNameAndStatesAsync(SearchConfigurationInput search,
         CancellationToken cancellationToken)
     {
         var query = DbSet.AsNoTracking();

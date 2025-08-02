@@ -8,7 +8,15 @@ namespace AdasIt.Andor.Configurations.Domain;
 
 public class ConfigurationValidator : IConfigurationValidator
 {
-    public List<Notification> ValidateCreation(string name, string value, string description, DateTime startDate, DateTime? expireDate)
+    private readonly DomainQueries.IQueriesConfigurationRepository _query;
+
+    public ConfigurationValidator(DomainQueries.IQueriesConfigurationRepository query)
+    {
+        _query = query;
+    }
+
+    public async Task<List<Notification>> ValidateCreationAsync(string name, string value, string description, DateTime startDate, DateTime? expireDate,
+        CancellationToken cancellationToken)
     {
         List<Notification> notifications = new();
 
@@ -29,12 +37,13 @@ public class ConfigurationValidator : IConfigurationValidator
             AddNotification(new Notification(nameof(expireDate), $"{nameof(expireDate)} should be greater than now", CommonErrorCodes.Validation), notifications);
         }
 
-        DefaultValidations(name, value, description, startDate, expireDate, notifications);
+        await DefaultValidationsAsync(null, name, value, description, startDate, expireDate, notifications, cancellationToken);
 
         return notifications;
     }
 
-    public List<Notification> ValidateUpdate(Configuration existing, string name, string value, string description, DateTime startDate, DateTime? expireDate)
+    public async Task<List<Notification>> ValidateUpdateAsync(Configuration existing, string name, string value, string description, DateTime startDate,
+        DateTime? expireDate, CancellationToken cancellationToken)
     {
         var notifications = new List<Notification>();
 
@@ -64,13 +73,13 @@ public class ConfigurationValidator : IConfigurationValidator
             AddNotification(new(nameof(existing.StartDate), message, ConfigurationsErrorCodes.ErrorOnChangeName), notifications);
         }
 
-        DefaultValidations(name, value, description, startDate, expireDate, notifications);
+        await DefaultValidationsAsync(existing.Id, name, value, description, startDate, expireDate, notifications, cancellationToken);
 
         return notifications;
     }
 
-    private void DefaultValidations(string name, string value, string description, DateTime startDate, DateTime? expireDate,
-        List<Notification> notifications)
+    private async Task DefaultValidationsAsync(Guid? id, string name, string value, string description, DateTime startDate, DateTime? expireDate,
+        List<Notification> notifications, CancellationToken cancellationToken)
     {
         AddNotification(startDate.NotDefaultDateTime(), notifications);
         AddNotification(expireDate.NotDefaultDateTime(), notifications);
@@ -80,9 +89,37 @@ public class ConfigurationValidator : IConfigurationValidator
         AddNotification(value.BetweenLength(1, 2500), notifications);
         AddNotification(description.NotNullOrEmptyOrWhiteSpace(), notifications);
         AddNotification(description.BetweenLength(3, 1000), notifications);
+
+        var listWithSameName = await _query.GetByNameAndStatesAsync(
+            new DomainQueries.SearchConfigurationInput()
+            {
+                Name = name,
+                States = [DomainQueries.ConfigurationState.Active, DomainQueries.ConfigurationState.Awaiting]
+            }, cancellationToken);
+
+        if (listWithSameName is not null && (id is null || (id is not null && listWithSameName.Exists(x => x.Id != id))))
+        {
+            if (listWithSameName.Exists(x => x.StartDate <= startDate
+                    && (x.ExpireDate == null || (x.ExpireDate != null && x.ExpireDate >= startDate))
+                    && x.Id != id))
+            {
+                AddNotification(
+                    new Notification("", ConfigurationsErrorCodes.ThereWillCurrentConfigurationStartDate)
+                    , notifications);
+            }
+
+            if (listWithSameName.Exists(x => x.StartDate <= expireDate
+                    && (x.ExpireDate == null || (x.ExpireDate != null && x.ExpireDate >= expireDate))
+                    && x.Id != id))
+            {
+                AddNotification(
+                    new Notification("", ConfigurationsErrorCodes.ThereWillCurrentConfigurationStartDate)
+                    , notifications);
+            }
+        }
     }
 
-    private void AddNotification(Notification? notification, List<Notification> list)
+    private static void AddNotification(Notification? notification, List<Notification> list)
     {
         if (notification != null)
         {

@@ -1,9 +1,7 @@
 ﻿using AdasIt.Andor.Configurations.Application.Actions;
-using AdasIt.Andor.Configurations.ApplicationDto;
 using AdasIt.Andor.Configurations.Domain;
 using AdasIt.Andor.Configurations.Domain.Repository;
 using AdasIt.Andor.Configurations.Domain.ValueObjects;
-using AdasIt.Andor.Domain.SeedWork.Repositories;
 using Akka.Actor;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,19 +10,15 @@ namespace AdasIt.Andor.Configurations.Application.Actors;
 public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
 {
     private readonly ConfigurationId _id;
-    private readonly IConfigurationValidator _validator;
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ICommandsConfigurationRepository _commandRepository;
     private Configuration? _configuration;
+    private readonly IServiceProvider _serviceProvider;
 
     public IStash? Stash { get; set; }
 
     public ConfigurationActor(ConfigurationId id,
         IServiceProvider serviceProvider)
     {
-        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        _validator = _serviceProvider.GetService<IConfigurationValidator>() ?? throw new InvalidOperationException(nameof(_validator));
-        _commandRepository = _serviceProvider.GetService<ICommandsConfigurationRepository>() ?? throw new InvalidOperationException(nameof(ICommandRepository<Configuration, ConfigurationId>));
+        _serviceProvider = serviceProvider;
 
         _id = id;
 
@@ -42,10 +36,13 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
     {
         ReceiveAsync<PreLoadConfiguration>(async cmd =>
         {
+            using var scope = _serviceProvider.CreateScope();
+            var _commandRepository = scope.ServiceProvider.GetRequiredService<ICommandsConfigurationRepository>();
+
             var result = await _commandRepository.GetByIdAsync(_id, CancellationToken.None);
 
             if (result == null) return;
-            
+
             _configuration = result;
 
             Become(Ready);
@@ -54,7 +51,11 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
 
         ReceiveAsync<CreateConfiguration>(async cmd =>
         {
-            var (result, config) = Configuration.New(
+            using var scope = _serviceProvider.CreateScope();
+            var _validator = scope.ServiceProvider.GetRequiredService<IConfigurationValidator>();
+            var _commandRepository = scope.ServiceProvider.GetRequiredService<ICommandsConfigurationRepository>();
+
+            var (result, config) = await Configuration.NewAsync(
                 _id,
                 cmd.Name,
                 cmd.Value,
@@ -62,7 +63,8 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
                 cmd.StartDate,
                 cmd.ExpireDate,
                 Guid.NewGuid().ToString(),
-                _validator);
+                _validator,
+                cmd.CancellationToken);
 
             if (config != null && config.Events.Any())
             {
@@ -81,13 +83,18 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
     {
         ReceiveAsync<UpdateConfiguration>(async cmd =>
         {
-            var result = _configuration!.Update(
+            using var scope = _serviceProvider.CreateScope();
+            var _validator = scope.ServiceProvider.GetRequiredService<IConfigurationValidator>();
+            var _commandRepository = scope.ServiceProvider.GetRequiredService<ICommandsConfigurationRepository>();
+
+            var result = _configuration!.UpdateAsync(
                 cmd.Name,
                 cmd.Value,
                 cmd.Description,
                 cmd.StartDate,
                 cmd.ExpireDate,
-                _validator);
+                _validator,
+                cmd.CancellationToken);
 
             if (_configuration.Events.Any())
             {

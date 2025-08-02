@@ -13,17 +13,17 @@ public class ConfigurationContextFactory : IDesignTimeDbContextFactory<Configura
         return new ConfigurationContext(options);
     }
 }
+
 public class ConfigurationContext
     : PrincipalContext
 {
-    public ConfigurationContext(DbContextOptions options) : base(options)
+    public ConfigurationContext(DbContextOptions<ConfigurationContext> options) : base(options)
     {
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
 
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }

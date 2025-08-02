@@ -4,6 +4,7 @@ using AdasIt.Andor.Configurations.Application.Interfaces;
 using AdasIt.Andor.Configurations.ApplicationDto;
 using AdasIt.Andor.Configurations.DomainQueries;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
 

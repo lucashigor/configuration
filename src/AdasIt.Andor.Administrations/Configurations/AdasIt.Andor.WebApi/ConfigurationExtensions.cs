@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AdasIt.Andor.Configurations.WebApi;
 

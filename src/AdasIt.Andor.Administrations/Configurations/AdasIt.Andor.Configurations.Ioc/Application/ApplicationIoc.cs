@@ -12,7 +12,7 @@ internal static class ApplicationIoc
     {
         services.AddSingleton<IAkkaModule, ApplicationAkkaModule>();
 
-        services.AddSingleton<IConfigurationValidator, ConfigurationValidator>();
+        services.AddScoped<IConfigurationValidator, ConfigurationValidator>();
 
         services.AddScoped<IConfigurationQueriesService, ConfigurationQueriesService>();
 
