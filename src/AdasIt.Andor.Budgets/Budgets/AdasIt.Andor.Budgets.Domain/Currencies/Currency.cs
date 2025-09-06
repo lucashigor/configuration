@@ -1,6 +1,5 @@
 ﻿using AdasIt.Andor.Budgets.Domain.Currencies.ValueObjects;
 using AdasIt.Andor.Domain.SeedWork;
-using AdasIt.Andor.Domain.Validation;
 using AdasIt.Andor.Domain.ValuesObjects;
 
 namespace AdasIt.Andor.Budgets.Domain.Currencies;
@@ -10,30 +9,37 @@ public class Currency : Entity<CurrencyId>
     public string Name { get; private set; } = "";
     public string Iso { get; private set; } = "";
     public string Symbol { get; private set; } = "";
-    private DomainResult SetValues(CurrencyId id,
-        string name)
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    private Currency()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     {
-        AddNotification(name.NotNullOrEmptyOrWhiteSpace());
-        AddNotification(name.BetweenLength(3, 70));
-
-        if (Notifications.Count > 1)
-        {
-            return Validate();
-        }
-
-        Name = name;
-
-        var result = Validate();
-
-        return result;
+        // For EF
     }
 
-    public static (DomainResult, Currency?) New(
-        string name)
+    private Currency(string name,
+        string iso,
+        string symbol)
     {
-        var entity = new Currency();
+        Name = name;
+        Iso = iso;
+        Symbol = symbol;
+    }
 
-        var result = entity.SetValues(CurrencyId.New(), name);
+    public static async Task<(DomainResult, Currency?)> NewAsync(string name,
+        string iso,
+        string symbol,
+        ICurrencyValidator currencyValidator,
+        CancellationToken cancellationToken)
+    {
+        var entity = new Currency(name, iso, symbol);
+
+        var notifications = await currencyValidator.ValidateCreationAsync(entity.Name,
+            entity.Iso, entity.Symbol, cancellationToken);
+
+        entity.AddNotification(notifications);
+
+        var result = entity.Validate();
 
         if (result.IsFailure)
         {

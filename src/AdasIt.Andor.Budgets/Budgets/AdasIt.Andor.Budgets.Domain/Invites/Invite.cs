@@ -19,98 +19,30 @@ public class Invite : Entity<InviteId>
     public AccountId AccountId { get; private set; }
     public Account? Account { get; private set; }
 
-    private DomainResult SetValues(InviteId id,
-        string email,
-        AccountId accountId,
-        InviteStatus inviteStatus,
-        UserId invitingId,
-        UserId? guestId)
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    private Invite()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     {
-
-        if (Notifications.Count > 1)
-        {
-            return Validate();
-        }
-
-        Email = email;
-        InvitingId = invitingId;
-        GuestId = guestId;
-        Status = inviteStatus;
-        AccountId = accountId;
-
-        var result = Validate();
-
-        return result;
+        // For EF
     }
 
-    public static (DomainResult, Invite?) New(
-        string email,
-        AccountId accountId,
-        UserId Inviting)
+    public static async Task<(DomainResult, Invite?)> NewAsync(string name,
+        IInviteValidator currencyValidator,
+        CancellationToken cancellationToken)
     {
         var entity = new Invite();
 
-        var result = entity.SetValues(InviteId.New(), email, accountId, InviteStatus.Pending, Inviting, null);
+        var notifications = await currencyValidator.ValidateCreationAsync(entity.Email, cancellationToken);
+
+        entity.AddNotification(notifications);
+
+        var result = entity.Validate();
 
         if (result.IsFailure)
         {
             return (result, null);
         }
-
-        entity.RaiseDomainEvent(InviteCreatedDomainEvent.FromAggregator(entity));
 
         return (result, entity);
-    }
-
-    public (DomainResult, Invite?) GuestFound(
-        UserId guest)
-    {
-        var result = SetValues(Id, Email, AccountId, InviteStatus.Pending, InvitingId, guest);
-
-        if (result.IsFailure)
-        {
-            return (result, null);
-        }
-
-        RaiseDomainEvent(GuestFoundDomainEvent.FromAggregator(this));
-
-        return (result, this);
-    }
-
-    public (DomainResult, Invite?) GuestNotFound()
-    {
-        var result = SetValues(Id, Email, AccountId, InviteStatus.Pending, InvitingId, null);
-
-        if (result.IsFailure)
-        {
-            return (result, null);
-        }
-
-        RaiseDomainEvent(GuestNotFoundDomainEvent.FromAggregator(this));
-
-        return (result, this);
-    }
-
-    public (DomainResult, Invite?) InvitationMade()
-    {
-        RaiseDomainEvent(InvitationMadeDomainEvent.FromAggregator(this));
-
-        return (DomainResult.Success(), this);
-    }
-
-    public (DomainResult, Invite?) InvitationAnswered(bool accepeted)
-    {
-        var status = accepeted ? InviteStatus.Accepted : InviteStatus.Refused;
-
-        var result = SetValues(Id, Email, AccountId, status, InvitingId, GuestId);
-
-        if (result.IsFailure)
-        {
-            return (result, null);
-        }
-
-        RaiseDomainEvent(InvitationAnsweredDomainEvent.FromAggregator(this));
-
-        return (result, this);
     }
 }

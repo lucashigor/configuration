@@ -1,7 +1,7 @@
 ﻿using AdasIt.Andor.Domain;
 using AdasIt.Andor.Domain.Validation;
 
-namespace AdasIt.Andor.Budgets.Domain.FinancialMovements.ValueObjects;
+namespace AdasIt.Andor.Budgets.Domain.Accounts.ValueObjects;
 
 public readonly record struct FinancialMovementId(Guid Value) : IId<FinancialMovementId>
 {

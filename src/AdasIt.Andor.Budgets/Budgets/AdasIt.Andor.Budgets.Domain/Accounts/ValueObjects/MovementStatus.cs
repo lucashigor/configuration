@@ -1,6 +1,6 @@
 ﻿using AdasIt.Andor.Domain;
 
-namespace AdasIt.Andor.Budgets.Domain.FinancialMovements.ValueObjects;
+namespace AdasIt.Andor.Budgets.Domain.Accounts.ValueObjects;
 
 public record MovementStatus : Enumeration<int>
 {

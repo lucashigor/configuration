@@ -16,7 +16,7 @@ public class Account : AggregateRoot<AccountId>
 {
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
-    public Currency? Currency { get; private set; }
+    public Currency Currency { get; private set; }
     public AccountStatus Status { get; private set; } = AccountStatus.Undefined;
 
     public IReadOnlyCollection<Category> Categories => [.. _categories];
@@ -30,7 +30,9 @@ public class Account : AggregateRoot<AccountId>
     public IReadOnlyCollection<Invite> Invites => [.. _invites];
     private ICollection<Invite> _invites { get; set; } = new HashSet<Invite>();
 
-    public Account()
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    private Account()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     {
     }
 
@@ -53,7 +55,8 @@ public class Account : AggregateRoot<AccountId>
     {
         var entity = new Account(name, description, currency, AccountStatus.Active);
 
-        var notifications = await accountValidator.ValidateCreationAsync(entity.Name, entity.Description, entity.Currency, entity.Status, cancellationToken);
+        var notifications = await accountValidator.ValidateCreationAsync(entity.Name,
+            entity.Description, entity.Currency, entity.Status, cancellationToken);
 
         entity.AddNotification(notifications);
 
@@ -69,30 +72,50 @@ public class Account : AggregateRoot<AccountId>
         return (result, entity);
     }
 
-    public DomainResult SetCategoriesAvailable(Deposit deposit)
+    public DomainResult SetCategoriesAvailable(IEnumerable<Category> categories)
     {
-        this.RaiseDomainEvent(new DepositRegistered());
+        _categories = categories.ToList();
+        _subCategories = categories.SelectMany(c => c.SubCategories).ToList();
 
         return DomainResult.Success();
     }
 
-    public DomainResult SetPaymentMethodsAvailable(Deposit deposit)
+    public DomainResult SetPaymentMethodsAvailable(IEnumerable<PaymentMethod> paymentMethods)
     {
-        this.RaiseDomainEvent(new DepositRegistered());
+        _paymentMethods = paymentMethods.ToList();
 
         return DomainResult.Success();
     }
 
-    public DomainResult Deposit(Deposit deposit)
+    public DomainResult Deposit(FinancialMovement.Deposit deposit)
     {
-        this.RaiseDomainEvent(new DepositRegistered());
+        this.RaiseDomainEvent(new DepositRegistered() with
+        {
+            Date = deposit.Date,
+            Description = deposit.Description,
+            Type = deposit.Type,
+            Status = deposit.Status,
+            SubCategoryId = deposit.SubCategoryId,
+            PaymentMethodId = deposit.PaymentMethodId,
+            Value = deposit.Value
+        });
 
         return DomainResult.Success();
     }
 
-    public DomainResult Withdrawal(Withdrawal withdrawal)
+    public DomainResult Withdrawal(FinancialMovement.Withdrawal withdrawal)
     {
-        this.RaiseDomainEvent(new WithdrawalRegistered());
+        this.RaiseDomainEvent(new WithdrawalRegistered() with
+        {
+            Date = withdrawal.Date,
+            Description = withdrawal.Description,
+            Type = withdrawal.Type,
+            Status = withdrawal.Status,
+            SubCategoryId = withdrawal.SubCategoryId,
+            PaymentMethodId = withdrawal.PaymentMethodId,
+            Value = withdrawal.Value
+        });
+
         return DomainResult.Success();
     }
 }

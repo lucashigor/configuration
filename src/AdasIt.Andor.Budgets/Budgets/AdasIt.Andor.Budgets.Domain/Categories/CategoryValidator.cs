@@ -1,15 +1,11 @@
-﻿using AdasIt.Andor.Budgets.Domain.Currencies;
-using AdasIt.Andor.Domain.Validation;
+﻿using AdasIt.Andor.Domain.Validation;
 using AdasIt.Andor.Domain.ValuesObjects;
 
-namespace AdasIt.Andor.Budgets.Domain.Accounts;
+namespace AdasIt.Andor.Budgets.Domain.Categories;
 
-public class AccountValidator : IAccountValidator
+public class CategoryValidator : ICategoryValidator
 {
     public async Task<List<Notification>> ValidateCreationAsync(string name,
-        string description,
-        Currency? currency,
-        AccountStatus status,
         CancellationToken cancellationToken)
     {
         List<Notification> notifications = new();
@@ -19,10 +15,7 @@ public class AccountValidator : IAccountValidator
         return notifications;
     }
 
-    public async Task<List<Notification>> ValidateUpdateAsync(Account current,
-        string name,
-        string description,
-        Currency currency,
+    public async Task<List<Notification>> ValidateUpdateAsync(string name,
         CancellationToken cancellationToken)
     {
         List<Notification> notifications = new();

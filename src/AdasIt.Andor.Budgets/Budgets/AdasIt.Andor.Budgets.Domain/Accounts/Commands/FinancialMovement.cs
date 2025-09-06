@@ -1,8 +1,8 @@
-﻿using AdasIt.Andor.Domain.Events;
+﻿using AdasIt.Andor.Domain.Commands;
 
-namespace AdasIt.Andor.Budgets.Domain.Accounts.Events;
+namespace AdasIt.Andor.Budgets.Domain.Accounts.Commands;
 
-public record DepositRegistered : DomainEvent
+public abstract record FinancialMovement : Command
 {
     public DateTime Date { get; init; }
     public string Description { get; init; } = "";
@@ -11,4 +11,12 @@ public record DepositRegistered : DomainEvent
     public Guid SubCategoryId { get; init; }
     public Guid PaymentMethodId { get; init; }
     public decimal Value { get; init; }
+
+    public record Deposit : FinancialMovement
+    {
+    }
+
+    public record Withdrawal : FinancialMovement
+    {
+    }
 }

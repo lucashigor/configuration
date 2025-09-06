@@ -1,6 +1,6 @@
-﻿namespace AdasIt.Andor.Configurations.InfrastructureCommands.Config
+﻿namespace AdasIt.Andor.Configurations.InfrastructureCommands
 {
-    public record ConfigurationDto
+    public record ConfigurationEntity
     {
         public Guid Id { get; set; }
         public string Name { get; init; } = "";

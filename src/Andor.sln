@@ -91,6 +91,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Investments", "Investments"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Investments.Domain", "AdasIt.Andor.Investments\Investments\AdasIt.Andor.Investments.Domain\AdasIt.Andor.Investments.Domain.csproj", "{EC020702-A697-43AA-B435-E5C54221346E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Budgets.InfrastructureCommands", "AdasIt.Andor.Budgets\Budgets\AdasIt.Andor.Budgets.InfrastructureCommands\AdasIt.Andor.Budgets.InfrastructureCommands.csproj", "{2E4ACE1C-927F-4AF2-B630-8EA6E92861DA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1881E57B-3226-4010-ACCF-8B2791C483E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdasIt.Andor.Budgets.Tests", "AdasIt.Andor.Budgets\Budgets\Tests\AdasIt.Andor.Budgets.Tests\AdasIt.Andor.Budgets.Tests.csproj", "{8E908BBE-666A-435C-8BB7-853A613697D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -197,6 +203,14 @@ Global
 		{EC020702-A697-43AA-B435-E5C54221346E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC020702-A697-43AA-B435-E5C54221346E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC020702-A697-43AA-B435-E5C54221346E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E4ACE1C-927F-4AF2-B630-8EA6E92861DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E4ACE1C-927F-4AF2-B630-8EA6E92861DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E4ACE1C-927F-4AF2-B630-8EA6E92861DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E4ACE1C-927F-4AF2-B630-8EA6E92861DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E908BBE-666A-435C-8BB7-853A613697D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E908BBE-666A-435C-8BB7-853A613697D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E908BBE-666A-435C-8BB7-853A613697D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E908BBE-666A-435C-8BB7-853A613697D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -237,6 +251,9 @@ Global
 		{11836B4A-B696-48D5-86E4-207BA90BC77A} = {2E8D3228-97D8-4ADA-A96D-350A4CEBE349}
 		{5181D901-6095-48F5-9021-7C64CA2C6345} = {818E39DD-6513-40AE-A6B2-129EA7DA5432}
 		{EC020702-A697-43AA-B435-E5C54221346E} = {5181D901-6095-48F5-9021-7C64CA2C6345}
+		{2E4ACE1C-927F-4AF2-B630-8EA6E92861DA} = {32C29E2A-B60F-4B78-9F7D-A64B5C480B15}
+		{1881E57B-3226-4010-ACCF-8B2791C483E5} = {32C29E2A-B60F-4B78-9F7D-A64B5C480B15}
+		{8E908BBE-666A-435C-8BB7-853A613697D6} = {1881E57B-3226-4010-ACCF-8B2791C483E5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2EEA65CF-3488-4AA6-8587-AF18FF18472A}

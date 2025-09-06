@@ -1,7 +1,6 @@
 ﻿using AdasIt.Andor.Configurations.Domain;
 using AdasIt.Andor.Configurations.Domain.Events;
 using AdasIt.Andor.Configurations.Domain.ValueObjects;
-using AdasIt.Andor.Configurations.InfrastructureCommands.Config;
 using Akka.Actor;
 using Akka.Persistence;
 using Mapster;
@@ -10,7 +9,7 @@ namespace AdasIt.Andor.Configurations.InfrastructureCommands;
 public class ConfigurationCommandsEventHandlerActor : ReceivePersistentActor
 {
     private readonly Guid _configId;
-    private ConfigurationDto? _configuration;
+    private ConfigurationEntity? _configuration;
 
     public override string PersistenceId => $"configuration-{_configId}";
 
@@ -83,7 +82,7 @@ public class ConfigurationCommandsEventHandlerActor : ReceivePersistentActor
         }
     }
 
-    public static Configuration LoadConfiguration(ConfigurationDto @base)
+    public static Configuration LoadConfiguration(ConfigurationEntity @base)
         => Configuration.Load(new ConfigurationId(@base.Id), @base.Name, @base.Value,
             @base.Description, @base.StartDate, @base.ExpireDate, @base.CreatedBy,
             @base.CreatedAt);

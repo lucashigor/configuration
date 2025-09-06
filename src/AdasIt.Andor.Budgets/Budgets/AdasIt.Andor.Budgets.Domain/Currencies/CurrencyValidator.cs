@@ -1,44 +1,48 @@
-﻿using AdasIt.Andor.Budgets.Domain.Currencies;
-using AdasIt.Andor.Domain.Validation;
+﻿using AdasIt.Andor.Domain.Validation;
 using AdasIt.Andor.Domain.ValuesObjects;
 
-namespace AdasIt.Andor.Budgets.Domain.Accounts;
+namespace AdasIt.Andor.Budgets.Domain.Currencies;
 
-public class AccountValidator : IAccountValidator
+public class CurrencyValidator : ICurrencyValidator
 {
     public async Task<List<Notification>> ValidateCreationAsync(string name,
-        string description,
-        Currency? currency,
-        AccountStatus status,
+        string iso,
+        string symbol,
         CancellationToken cancellationToken)
     {
         List<Notification> notifications = new();
 
-        await DefaultValidationsAsync(name, notifications, cancellationToken);
+        await DefaultValidationsAsync(name, iso, symbol, notifications, cancellationToken);
 
         return notifications;
     }
 
-    public async Task<List<Notification>> ValidateUpdateAsync(Account current,
-        string name,
-        string description,
-        Currency currency,
-        CancellationToken cancellationToken)
+    public async Task<List<Notification>> ValidateUpdateAsync(string name,
+        string iso,
+        string symbol, CancellationToken cancellationToken)
     {
         List<Notification> notifications = new();
 
-        await DefaultValidationsAsync(name, notifications, cancellationToken);
+        await DefaultValidationsAsync(name, iso, symbol, notifications, cancellationToken);
 
         return notifications;
     }
 
     private Task DefaultValidationsAsync(
         string name,
+        string iso,
+        string symbol,
         List<Notification> notifications,
         CancellationToken cancellationToken)
     {
         AddNotification(name.NotNullOrEmptyOrWhiteSpace(), notifications);
         AddNotification(name.BetweenLength(3, 70), notifications);
+
+        AddNotification(iso.BetweenLength(2, 3), notifications);
+        AddNotification(iso.NotNullOrEmptyOrWhiteSpace(), notifications);
+
+        AddNotification(symbol.NotNullOrEmptyOrWhiteSpace(), notifications);
+        AddNotification(symbol.BetweenLength(2, 10), notifications);
 
         return Task.CompletedTask;
     }

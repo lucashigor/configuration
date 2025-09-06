@@ -7,10 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Events\" />
-    <Folder Include="Errors\" />
-    <Folder Include="Repository\" />
-    <Folder Include="ValueObjects\" />
+    <Compile Remove="Errors\**" />
+    <Compile Remove="Events\**" />
+    <Compile Remove="Repository\**" />
+    <Compile Remove="ValueObjects\**" />
+    <EmbeddedResource Remove="Errors\**" />
+    <EmbeddedResource Remove="Events\**" />
+    <EmbeddedResource Remove="Repository\**" />
+    <EmbeddedResource Remove="ValueObjects\**" />
+    <None Remove="Errors\**" />
+    <None Remove="Events\**" />
+    <None Remove="Repository\**" />
+    <None Remove="ValueObjects\**" />
   </ItemGroup>
 
 </Project>

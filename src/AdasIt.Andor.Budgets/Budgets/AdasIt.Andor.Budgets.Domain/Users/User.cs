@@ -1,5 +1,4 @@
 ﻿using AdasIt.Andor.Budgets.Domain.Currencies.ValueObjects;
-using AdasIt.Andor.Budgets.Domain.Users.Events;
 using AdasIt.Andor.Budgets.Domain.Users.ValueObjects;
 using AdasIt.Andor.Domain.SeedWork;
 using AdasIt.Andor.Domain.ValuesObjects;
@@ -15,51 +14,30 @@ public sealed class User : AggregateRoot<UserId>
     public CurrencyId PreferredCurrencyId { get; set; }
     public LanguageId PreferredLanguageId { get; set; }
 
-    private DomainResult SetValues(
-        MailAddress email,
-        string firstName,
-        string lastName,
-        CurrencyId preferredCurrencyId,
-        LanguageId preferredLanguageId)
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    private User()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     {
-
-        if (Notifications.Count > 1)
-        {
-            return Validate();
-        }
-
-        Email = email;
-        FirstName = firstName;
-        LastName = lastName;
-        PreferredCurrencyId = preferredCurrencyId;
-        PreferredLanguageId = preferredLanguageId;
-
-        var result = Validate();
-
-        return result;
+        // For EF
     }
 
-    public static (DomainResult, User?) New(UserId userId, MailAddress email,
-        string firstName,
-        string lastName,
-        CurrencyId preferredCurrencyId,
-        LanguageId preferredLanguageId)
+    public static async Task<(DomainResult, User?)> NewAsync(string name,
+        IUserValidator _validator,
+        CancellationToken cancellationToken)
     {
         var entity = new User();
 
-        var result = entity.SetValues(
-            email,
-            firstName,
-            lastName,
-            preferredCurrencyId,
-           preferredLanguageId);
+        var notifications = await _validator.ValidateCreationAsync(entity.FirstName,
+            cancellationToken);
+
+        entity.AddNotification(notifications);
+
+        var result = entity.Validate();
 
         if (result.IsFailure)
         {
             return (result, null);
         }
-
-        entity.RaiseDomainEvent(UserCreatedDomainEvent.FromAggregateRoot(entity));
 
         return (result, entity);
     }
