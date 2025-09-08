@@ -1,46 +1,19 @@
-﻿using AdasIt.Andor.Domain.Validation;
+﻿using AdasIt.Andor.Budgets.Domain.Invites.ValueObjects;
+using AdasIt.Andor.Domain.Validation;
 using AdasIt.Andor.Domain.ValuesObjects;
 
 namespace AdasIt.Andor.Budgets.Domain.Invites;
 
-public class InviteValidator : IInviteValidator
+public class InviteValidator : DefaultValidator<Invite, InviteId>,  IInviteValidator
 {
-    public async Task<List<Notification>> ValidateCreationAsync(string name,
-        CancellationToken cancellationToken)
-    {
-        List<Notification> notifications = new();
-
-        await DefaultValidationsAsync(name, notifications, cancellationToken);
-
-        return notifications;
-    }
-
-    public async Task<List<Notification>> ValidateUpdateAsync(string name,
-        CancellationToken cancellationToken)
-    {
-        List<Notification> notifications = new();
-
-        await DefaultValidationsAsync(name, notifications, cancellationToken);
-
-        return notifications;
-    }
-
-    private Task DefaultValidationsAsync(
-        string name,
+    protected sealed override async Task DefaultValidationsAsync(
+        Invite entity,
         List<Notification> notifications,
         CancellationToken cancellationToken)
     {
-        AddNotification(name.NotNullOrEmptyOrWhiteSpace(), notifications);
-        AddNotification(name.BetweenLength(3, 70), notifications);
-
-        return Task.CompletedTask;
-    }
-
-    private static void AddNotification(Notification? notification, List<Notification> list)
-    {
-        if (notification != null)
-        {
-            list.Add(notification);
-        }
+        await base.DefaultValidationsAsync(entity, notifications, cancellationToken);
+        
+        AddNotification(entity.Email.NotNullOrEmptyOrWhiteSpace(), notifications);
+        AddNotification(entity.Email.BetweenLength(3, 70), notifications);
     }
 }

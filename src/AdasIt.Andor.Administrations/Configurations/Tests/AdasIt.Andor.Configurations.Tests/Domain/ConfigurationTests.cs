@@ -17,17 +17,18 @@ public class ConfigurationTests()
 
     [Fact(DisplayName = nameof(NewConfigurationValidInputShouldNotHaveNotifications))]
     [Trait("Domain", "Configuration - Validation")]
-    public void NewConfigurationValidInputShouldNotHaveNotifications()
+    public async Task NewConfigurationValidInputShouldNotHaveNotifications()
     {
         // Act
-        var (result, config) = Configuration.New(
+        var (result, config) = await Configuration.NewAsync(
                 name: ConfigurationFixture.GetValidName(),
                 value: ConfigurationFixture.GetValidValue(),
                 description: ConfigurationFixture.GetValidDescription(),
                 startDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
                 expireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting),
                 userId: Guid.NewGuid().ToString(),
-                _mockValidator);
+                _mockValidator,
+                CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
 
@@ -54,7 +55,9 @@ public class ConfigurationTests()
                 Value: ConfigurationFixture.GetValidValue(),
                 Description: ConfigurationFixture.GetValidDescription(),
                 StartDate: startDate,
-                ExpireDate: expireDate
+                ExpireDate: expireDate,
+                CreatedBy: Guid.NewGuid().ToString(),
+                CreatedAt: DateTime.UtcNow
             ));
 
         // Assert
@@ -64,16 +67,17 @@ public class ConfigurationTests()
     [Theory(DisplayName = nameof(ValidationErrorsOnNewConfiguration))]
     [Trait("Domain", "Configuration - Validation")]
     [MemberData(nameof(TestInvalidDataGenerator.GetPersonFromDataGenerator), MemberType = typeof(TestInvalidDataGenerator))]
-    public void ValidationErrorsOnNewConfiguration(BaseConfiguration inputConfig, DomainErrorCode error, string fieldName)
+    public async Task ValidationErrorsOnNewConfiguration(BaseConfiguration inputConfig, DomainErrorCode error, string fieldName)
     {
-        var (result, config) = Configuration.New(
+        var (result, config) = await Configuration.NewAsync(
             name: inputConfig.Name,
             value: inputConfig.Value,
             description: inputConfig.Description,
             startDate: inputConfig.StartDate,
             expireDate: inputConfig.ExpireDate,
             Guid.NewGuid().ToString(),
-            _mockValidator);
+            _mockValidator,
+            CancellationToken.None);
 
         result.IsFailure.Should().BeTrue();
 
@@ -86,7 +90,7 @@ public class ConfigurationTests()
     [Theory(DisplayName = nameof(NotPossibleToChangeDataToExpiredConfiguration))]
     [Trait("Domain", "Configuration - Validation")]
     [MemberData(nameof(TestInvalidDataGenerator.UpdateWithErrorOnExpiredConfig), MemberType = typeof(TestInvalidDataGenerator))]
-    public void NotPossibleToChangeDataToExpiredConfiguration(
+    public async Task NotPossibleToChangeDataToExpiredConfiguration(
         UpdateWithError updateWithError)
     {
         var config = ConfigurationFixture.LoadConfiguration(updateWithError.ConfigurationStatus);
@@ -94,13 +98,14 @@ public class ConfigurationTests()
         config.State.Should().Be(updateWithError.ConfigurationStatus);
 
         // Act
-        var result = config.Update(
+        var result = await config.UpdateAsync(
             name: updateWithError.Name ?? config.Name,
             value: updateWithError.Value ?? config.Value,
             description: updateWithError.Description ?? config.Description,
             startDate: updateWithError.StartDate ?? config.StartDate,
             expireDate: updateWithError.ExpireDate ?? config.ExpireDate,
-            _mockValidator
+            _mockValidator,
+            CancellationToken.None
         );
 
         result!.Errors.Should().Contain(x => x.Error == updateWithError.Error, updateWithError.Because);

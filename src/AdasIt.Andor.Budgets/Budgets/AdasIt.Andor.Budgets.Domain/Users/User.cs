@@ -8,37 +8,38 @@ namespace AdasIt.Andor.Budgets.Domain.Users;
 
 public sealed class User : AggregateRoot<UserId>
 {
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
+    
+    public Name FirstName { get; private set; }
+    public Name LastName { get; private set; }
     public MailAddress Email { get; private set; }
-    public CurrencyId PreferredCurrencyId { get; set; }
-    public LanguageId PreferredLanguageId { get; set; }
+    public CurrencyId PreferredCurrencyId { get; private set; }
+    public LanguageId PreferredLanguageId { get; private set; }
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    private User()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    /// <summary>
+    /// Used to be constructed via reflection in: EventSourcing repository, ORM, etc.
+    /// </summary>
+#pragma warning disable CS8618, CS9264
+    protected User()
+#pragma warning restore CS8618, CS9264
     {
-        // For EF
     }
 
-    public static async Task<(DomainResult, User?)> NewAsync(string name,
-        IUserValidator _validator,
-        CancellationToken cancellationToken)
+    private User(Name firstName, Name lastName, MailAddress email, CurrencyId preferredCurrencyId,
+        LanguageId preferredLanguageId)
     {
-        var entity = new User();
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+        PreferredCurrencyId = preferredCurrencyId;
+        PreferredLanguageId = preferredLanguageId;
+    }
 
-        var notifications = await _validator.ValidateCreationAsync(entity.FirstName,
-            cancellationToken);
+    public static async Task<(DomainResult, User?)> NewAsync(Name firstName, Name lastName, 
+        MailAddress email, CurrencyId preferredCurrencyId, LanguageId preferredLanguageId,
+        IUserValidator validator, CancellationToken cancellationToken)
+    {
+        var entity = new User(firstName, lastName, email, preferredCurrencyId, preferredLanguageId);
 
-        entity.AddNotification(notifications);
-
-        var result = entity.Validate();
-
-        if (result.IsFailure)
-        {
-            return (result, null);
-        }
-
-        return (result, entity);
+        return await entity.ValidateAsync(validator, cancellationToken);
     }
 }

@@ -1,12 +1,9 @@
-﻿using AdasIt.Andor.Domain.ValuesObjects;
+﻿using AdasIt.Andor.Budgets.Domain.Categories.ValueObjects;
+using AdasIt.Andor.Domain.Validation;
+using AdasIt.Andor.Domain.ValuesObjects;
 
 namespace AdasIt.Andor.Budgets.Domain.Categories;
 
-public interface ICategoryValidator
+public interface ICategoryValidator : IDefaultValidator<Category, CategoryId>
 {
-    Task<List<Notification>> ValidateCreationAsync(string name,
-        CancellationToken cancellationToken);
-
-    Task<List<Notification>> ValidateUpdateAsync(string name,
-        CancellationToken cancellationToken);
 }

@@ -34,7 +34,7 @@ public class ConfigurationCommandsEventHandlerActor : ReceivePersistentActor
             return;
         }
 
-        var configuration = LoadConfiguration(_configuration!);
+        var configuration = _configuration.Adapt<Configuration>();
 
         Context.Sender.Tell(configuration);
     }
@@ -81,10 +81,5 @@ public class ConfigurationCommandsEventHandlerActor : ReceivePersistentActor
             _configuration = evt.Adapt(_configuration);
         }
     }
-
-    public static Configuration LoadConfiguration(ConfigurationEntity @base)
-        => Configuration.Load(new ConfigurationId(@base.Id), @base.Name, @base.Value,
-            @base.Description, @base.StartDate, @base.ExpireDate, @base.CreatedBy,
-            @base.CreatedAt);
 }
 

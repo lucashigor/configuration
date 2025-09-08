@@ -1,10 +1,8 @@
-﻿using AdasIt.Andor.Domain.ValuesObjects;
+﻿using AdasIt.Andor.Budgets.Domain.Invites.ValueObjects;
+using AdasIt.Andor.Domain.Validation;
 
 namespace AdasIt.Andor.Budgets.Domain.Invites;
 
-public interface IInviteValidator
+public interface IInviteValidator :  IDefaultValidator<Invite, InviteId>
 {
-    Task<List<Notification>> ValidateCreationAsync(string name, CancellationToken cancellationToken);
-
-    Task<List<Notification>> ValidateUpdateAsync(string name, CancellationToken cancellationToken);
 }

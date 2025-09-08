@@ -10,4 +10,8 @@
     <PackageReference Include="Bogus" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\AdasIt.Andor.Domain\AdasIt.Andor.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -18,15 +18,12 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\..\..\AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Domain\AdasIt.Andor.Configurations.Domain.csproj" />
+	  <ProjectReference Include="..\..\..\..\Adasit.Andor\Tests\AdasIt.Andor.TestsUtil\AdasIt.Andor.TestsUtil.csproj" />
 	  <ProjectReference Include="..\..\AdasIt.Andor.Budgets.Domain\AdasIt.Andor.Budgets.Domain.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Using Include="Xunit" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Domain\PaymentMethods\" />
 	</ItemGroup>
 
 </Project>

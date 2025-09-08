@@ -4,10 +4,9 @@ namespace AdasIt.Andor.Budgets.Domain.Users.Events;
 
 public record UserCreatedDomainEvent : DomainEvent
 {
-    public Guid Id { get; init; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Email { get; set; }
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
     public Guid PreferredCurrencyId { get; set; }
     public Guid PreferredLanguageId { get; set; }
 

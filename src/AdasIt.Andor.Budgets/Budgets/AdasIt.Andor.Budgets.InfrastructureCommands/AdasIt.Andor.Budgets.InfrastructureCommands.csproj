@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AdasIt.Andor.Budgets.Domain\AdasIt.Andor.Budgets.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

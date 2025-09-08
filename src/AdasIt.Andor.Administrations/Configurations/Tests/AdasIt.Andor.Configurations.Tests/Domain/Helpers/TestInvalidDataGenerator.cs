@@ -138,7 +138,9 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
                 Value: ConfigurationFixture.GetValidValue(),
                 Description: ConfigurationFixture.GetValidDescription(),
                 StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
-                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting)),
+                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting),
+                CreatedBy: Guid.NewGuid().ToString(),
+                CreatedAt: DateTime.UtcNow),
             CommonErrorCodes.Validation,
             nameof(Configuration.Name)
         };
@@ -150,7 +152,9 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
                 Value: string.Empty,
                 Description: ConfigurationFixture.GetValidDescription(),
                 StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
-                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting)),
+                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting),
+                CreatedBy: Guid.NewGuid().ToString(),
+                CreatedAt: DateTime.UtcNow),
             CommonErrorCodes.Validation,
             nameof(Configuration.Value)
         };
@@ -162,7 +166,9 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
                 Value: ConfigurationFixture.GetValidValue(),
                 Description: string.Empty,
                 StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
-                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting)),
+                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting),
+                CreatedBy: Guid.NewGuid().ToString(),
+                CreatedAt: DateTime.UtcNow),
             CommonErrorCodes.Validation,
             nameof(Configuration.Description)
         };
@@ -174,7 +180,9 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
                 Value: ConfigurationFixture.GetValidValue(),
                 Description: ConfigurationFixture.GetValidDescription(),
                 StartDate: DateTime.UtcNow.AddSeconds(-10),
-                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting)),
+                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting),
+                CreatedBy: Guid.NewGuid().ToString(),
+                CreatedAt: DateTime.UtcNow),
             CommonErrorCodes.Validation,
             nameof(Configuration.StartDate)
         };
@@ -186,7 +194,9 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
                 Value: ConfigurationFixture.GetValidValue(),
                 Description: ConfigurationFixture.GetValidDescription(),
                 StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
-                ExpireDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting).AddSeconds(-10)),
+                ExpireDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting).AddSeconds(-10),
+                CreatedBy: Guid.NewGuid().ToString(),
+                CreatedAt: DateTime.UtcNow),
             CommonErrorCodes.Validation,
             nameof(Configuration.ExpireDate)
         };
@@ -198,7 +208,9 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
                 Value: ConfigurationFixture.GetValidValue(),
                 Description: ConfigurationFixture.GetValidDescription(),
                 StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
-                ExpireDate: DateTime.UtcNow.AddSeconds(-10)),
+                ExpireDate: DateTime.UtcNow.AddSeconds(-10),
+                CreatedBy: Guid.NewGuid().ToString(),
+                CreatedAt: DateTime.UtcNow),
             CommonErrorCodes.Validation,
             nameof(Configuration.ExpireDate)
         };

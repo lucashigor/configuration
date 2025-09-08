@@ -1,70 +1,54 @@
 ﻿using AdasIt.Andor.Configurations.Domain;
 using AdasIt.Andor.Configurations.Domain.ValueObjects;
 using AdasIt.Andor.Configurations.Tests.Domain.Helpers;
+using AdasIt.Andor.Domain.ValuesObjects;
 using AdasIt.Andor.TestsUtil;
+using Mapster;
 
 namespace AdasIt.Andor.Configurations.Tests;
 
 public static class ConfigurationFixture
 {
     public static Configuration LoadConfiguration(ConfigurationState configurationStatus)
-        => LoadConfiguration(GetValidBaseConfiguration(configurationStatus), Guid.NewGuid());
+        => LoadConfiguration(GetValidBaseConfiguration(configurationStatus, Guid.NewGuid()));
 
     public static Configuration LoadConfiguration(Guid userId, ConfigurationState configurationStatus)
-        => LoadConfiguration(GetValidBaseConfiguration(configurationStatus), userId);
+        => LoadConfiguration(GetValidBaseConfiguration(configurationStatus,userId));
 
     public static Configuration LoadConfiguration(BaseConfiguration @base)
-        => LoadConfiguration(@base, Guid.NewGuid());
-
-    public static Configuration LoadConfiguration(BaseConfiguration @base, Guid userId)
     {
-        var propertyValues = new Dictionary<string, object>
+        try
         {
-            { nameof(Configuration.Name), @base.Name },
-            { nameof(Configuration.Value), @base.Value },
-            { nameof(Configuration.Description), @base.Description },
-            { nameof(Configuration.CreatedBy), userId.ToString() },
-            { nameof(Configuration.StartDate), @base.StartDate },
-            { nameof(Configuration.CreatedAt), @base.StartDate }
-         };
-
-        if (@base.ExpireDate != null)
-        {
-            propertyValues.Add(nameof(Configuration.ExpireDate), @base.ExpireDate);
+            return @base.Adapt<Configuration>();
         }
-
-        return Configuration.Load(ConfigurationId.New(), @base.Name, @base.Value,
-            @base.Description, @base.StartDate, @base.ExpireDate, userId.ToString(), DateTime.UtcNow);
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
-    public static Configuration GetValidConfiguration()
-        => GetValidConfiguration(Guid.NewGuid(), ConfigurationState.Awaiting);
+    public static string GetValidName()
+        => GeneralFixture.GetStringRightSize(Name.MinLength, Name.MaxLength);
 
-    public static Configuration GetValidConfiguration(ConfigurationState configurationStatus)
-        => GetValidConfiguration(Guid.NewGuid(), configurationStatus);
+    public static string GetValidValue()
+        => GeneralFixture.GetStringRightSize(Value.MinLength, Value.MaxLength);
 
-    public static Configuration GetValidConfiguration(Guid userId)
-        => GetValidConfiguration(userId, ConfigurationState.Awaiting);
-
-    public static Configuration GetValidConfiguration(Guid userId, ConfigurationState configurationStatus)
+    public static string GetValidDescription()
+        => GeneralFixture.GetStringRightSize(Description.MinLength, Description.MaxLength);
+    
+    private static BaseConfiguration GetValidBaseConfiguration(ConfigurationState configurationStatus, Guid userId)
     {
-        return LoadConfiguration(
-            new BaseConfiguration(
+        return new BaseConfiguration(
             Name: GetValidName(),
             Value: GetValidValue(),
             Description: GetValidDescription(),
             StartDate: GetValidStartDate(configurationStatus),
-            ExpireDate: GetValidExpireDate(configurationStatus)), userId);
+            ExpireDate: GetValidExpireDate(configurationStatus),
+            CreatedBy: userId.ToString(),
+            CreatedAt: DateTime.UtcNow
+        );
     }
-
-    public static string GetValidName()
-        => GeneralFixture.GetStringRightSize(3, 100);
-
-    public static string GetValidValue()
-        => GeneralFixture.GetStringRightSize(1, 2500);
-
-    public static string GetValidDescription()
-        => GeneralFixture.GetStringRightSize(3, 1000);
 
     public static DateTime GetValidStartDate(ConfigurationState state)
     {
@@ -101,17 +85,5 @@ public static class ConfigurationFixture
             throw new ArgumentOutOfRangeException(nameof(state), "Not state mapped");
         }
     }
-
-    private static BaseConfiguration GetValidBaseConfiguration(ConfigurationState configurationStatus)
-    {
-        return new BaseConfiguration(
-                        Name: GetValidName(),
-                        Value: GetValidValue(),
-                        Description: GetValidDescription(),
-                        StartDate: GetValidStartDate(configurationStatus),
-                        ExpireDate: GetValidExpireDate(configurationStatus)
-                    );
-    }
-
 }
 

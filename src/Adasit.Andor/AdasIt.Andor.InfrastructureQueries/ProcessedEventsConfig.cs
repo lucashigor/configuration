@@ -1,8 +1,7 @@
-﻿using AdasIt.Andor.InfrastructureQueries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace AdasIt.Andor.Configurations.InfrastructureQueries.Config;
+namespace AdasIt.Andor.InfrastructureQueries;
 
 public class ProcessedEventsConfig : IEntityTypeConfiguration<ProcessedEvents>
 {

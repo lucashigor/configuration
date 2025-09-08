@@ -1,5 +1,6 @@
 ﻿using Adasit.Andor.Auth;
 using AdasIt.Andor.ApplicationDto;
+using AdasIt.Andor.Budget.Ioc;
 using AdasIt.Andor.Configurations.Ioc;
 using AdasIt.Andor.Infrastructure;
 using AdasIt.Andor.Swagger;
@@ -26,6 +27,7 @@ builder.Services
 builder.Services.Configure<ApplicationSettings>(builder.Configuration);
 
 builder.Services.UseConfigurations(builder.Configuration);
+builder.Services.UseBudget(builder.Configuration);
 builder.Services.AddSwagger(builder.Configuration);
 builder.Services.ConfigureJWT(builder.Configuration);
 builder.Services.ConfigureHealthChecks(builder.Configuration);

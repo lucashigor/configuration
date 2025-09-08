@@ -10,8 +10,7 @@ public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot where T : IEq
     {
         _events = new HashSet<DomainEvent>();
     }
-
-
+    
     private readonly ICollection<DomainEvent> _events;
 
     public IReadOnlyCollection<DomainEvent> Events => [.. _events];

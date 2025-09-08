@@ -1,34 +1,39 @@
 ﻿using AdasIt.Andor.Budgets.Domain.Accounts.Repository;
+using AdasIt.Andor.Budgets.Domain.Categories.Repository;
+using AdasIt.Andor.Budgets.Domain.PaymentMethods.Repository;
+using AdasIt.Andor.Domain.ValuesObjects;
 
 namespace AdasIt.Andor.Budgets.Domain.Accounts
 {
-    public class AccountFactory
+    public class AccountFactory(
+        ICommandsAccountRepository commandsAccountRepository,
+        ICommandsPaymentMethodRepository commandsPaymentMethodRepository,
+        ICommandsCategoryRepository commandsCategoryRepository,
+        IAccountValidator accountValidator)
     {
-        private readonly ICommandsAccountRepository _commandsAccountRepository;
-        private readonly IAccountValidator _accountValidator;
-
-        public AccountFactory(ICommandsAccountRepository commandsAccountRepository,
-            IAccountValidator accountValidator)
-        {
-            _commandsAccountRepository = commandsAccountRepository;
-            _accountValidator = accountValidator;
-        }
-
-        public async Task<Account> CreateAsync(string name,
+        public async Task<(DomainResult, Account?)> CreateAsync(string name,
             string description,
             CancellationToken cancellationToken)
         {
-            var currency = await _commandsAccountRepository.GetDefaultCurrency(cancellationToken);
-            var categories = await _commandsAccountRepository.GetDefaultCategories(cancellationToken);
-            var paymentMethods = await _commandsAccountRepository.GetDefaultPaymentMethods(cancellationToken);
+            var currency = await commandsAccountRepository.GetDefaultCurrency(cancellationToken);
+            
+            var categories = await commandsCategoryRepository.GetDefaultCategories(cancellationToken);
+            
+            var paymentMethods = await commandsPaymentMethodRepository
+                .GetDefaultPaymentMethods(cancellationToken);
 
-            var (_, account) = await Account.NewAsync(name, description, currency, _accountValidator, cancellationToken);
+            var (result, account) = await Account.NewAsync(name, description, currency, accountValidator, cancellationToken);
 
+            if (!result.IsSuccess)
+            {
+                return (result, null);
+            }
+            
             account?.SetCategoriesAvailable(categories);
 
             account?.SetPaymentMethodsAvailable(paymentMethods);
 
-            return account;
+            return (result, account);
         }
     }
 }

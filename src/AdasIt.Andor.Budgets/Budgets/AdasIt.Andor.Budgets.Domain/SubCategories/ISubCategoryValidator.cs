@@ -1,16 +1,8 @@
-﻿using AdasIt.Andor.Budgets.Domain.Categories;
-using AdasIt.Andor.Budgets.Domain.PaymentMethods;
-using AdasIt.Andor.Domain.ValuesObjects;
+﻿using AdasIt.Andor.Budgets.Domain.SubCategories.ValueObjects;
+using AdasIt.Andor.Domain.Validation;
 
 namespace AdasIt.Andor.Budgets.Domain.SubCategories;
 
-public interface ISubCategoryValidator
+public interface ISubCategoryValidator : IDefaultValidator<SubCategory, SubCategoryId>
 {
-    Task<List<Notification>> ValidateCreationAsync(string name,
-        string Description,
-        DateTime StartDate,
-        DateTime DeactivationDate,
-        Category Category,
-        PaymentMethod DefaultPaymentMethod,
-        CancellationToken cancellationToken);
 }

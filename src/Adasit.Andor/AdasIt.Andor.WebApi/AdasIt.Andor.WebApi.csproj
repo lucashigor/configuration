@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Application\AdasIt.Andor.Configurations.Application.csproj" />
     <ProjectReference Include="..\..\AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Domain\AdasIt.Andor.Configurations.Domain.csproj" />
     <ProjectReference Include="..\..\AdasIt.Andor.Administrations\Configurations\AdasIt.Andor.Configurations.Ioc\AdasIt.Andor.Configurations.Ioc.csproj" />
+    <ProjectReference Include="..\..\AdasIt.Andor.Budgets\Budgets\AdasIt.Andor.Budget.Ioc\AdasIt.Andor.Budget.Ioc.csproj" />
     <ProjectReference Include="..\AdasIt.Andor.ApplicationDto\AdasIt.Andor.ApplicationDto.csproj" />
     <ProjectReference Include="..\HealthCheck\Andor.Adasit.HealthCheck\Andor.Adasit.HealthCheck.csproj" />
     <ProjectReference Include="..\Logging\OpenTelemetry\AdasIt.Andor.OpenTelemetry.csproj" />

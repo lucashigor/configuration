@@ -3,9 +3,12 @@ using AdasIt.Andor.Budgets.Domain.Accounts.Events;
 using AdasIt.Andor.Budgets.Domain.Accounts.ValueObjects;
 using AdasIt.Andor.Budgets.Domain.Categories;
 using AdasIt.Andor.Budgets.Domain.Currencies;
+using AdasIt.Andor.Budgets.Domain.FinancialMovements;
 using AdasIt.Andor.Budgets.Domain.Invites;
 using AdasIt.Andor.Budgets.Domain.PaymentMethods;
+using AdasIt.Andor.Budgets.Domain.PaymentMethods.ValueObjects;
 using AdasIt.Andor.Budgets.Domain.SubCategories;
+using AdasIt.Andor.Budgets.Domain.SubCategories.ValueObjects;
 using AdasIt.Andor.Budgets.Domain.Users;
 using AdasIt.Andor.Domain.SeedWork;
 using AdasIt.Andor.Domain.ValuesObjects;
@@ -14,8 +17,8 @@ namespace AdasIt.Andor.Budgets.Domain.Accounts;
 
 public class Account : AggregateRoot<AccountId>
 {
-    public string Name { get; private set; } = string.Empty;
-    public string Description { get; private set; } = string.Empty;
+    public Name Name { get; private set; }
+    public Description Description { get; private set; }
     public Currency Currency { get; private set; }
     public AccountStatus Status { get; private set; } = AccountStatus.Undefined;
 
@@ -30,14 +33,17 @@ public class Account : AggregateRoot<AccountId>
     public IReadOnlyCollection<Invite> Invites => [.. _invites];
     private ICollection<Invite> _invites { get; set; } = new HashSet<Invite>();
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    private Account()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    /// <summary>
+    /// Used to be constructed via reflection in: EventSourcing repository, ORM, etc.
+    /// </summary>
+#pragma warning disable CS8618, CS9264
+    protected Account()
+#pragma warning restore CS8618, CS9264
     {
     }
 
-    private Account(string name,
-        string description,
+    private Account(Name name,
+        Description description,
         Currency currency,
         AccountStatus status)
     {
@@ -47,35 +53,27 @@ public class Account : AggregateRoot<AccountId>
         Status = status;
     }
 
-    public static async Task<(DomainResult, Account?)> NewAsync(string name,
-        string description,
+    public static async Task<(DomainResult, Account?)> NewAsync(Name name,
+        Description description,
         Currency currency,
-        IAccountValidator accountValidator,
+        IAccountValidator validator,
         CancellationToken cancellationToken)
     {
         var entity = new Account(name, description, currency, AccountStatus.Active);
-
-        var notifications = await accountValidator.ValidateCreationAsync(entity.Name,
-            entity.Description, entity.Currency, entity.Status, cancellationToken);
-
-        entity.AddNotification(notifications);
-
-        var result = entity.Validate();
-
-        if (result.IsFailure)
-        {
-            return (result, null);
-        }
+        
+        var result =  await entity.ValidateAsync(validator, cancellationToken);
 
         entity.RaiseDomainEvent(AccountCreated.FromConfiguration(entity));
 
-        return (result, entity);
+        return result;
     }
 
     public DomainResult SetCategoriesAvailable(IEnumerable<Category> categories)
     {
-        _categories = categories.ToList();
-        _subCategories = categories.SelectMany(c => c.SubCategories).ToList();
+        var categoriesList = categories.ToList();
+        
+        _categories = categoriesList;
+        _subCategories = categoriesList.SelectMany(c => c.SubCategories).ToList();
 
         return DomainResult.Success();
     }
@@ -86,35 +84,21 @@ public class Account : AggregateRoot<AccountId>
 
         return DomainResult.Success();
     }
-
-    public DomainResult Deposit(FinancialMovement.Deposit deposit)
+    
+    public DomainResult AddFinancialMovement(AddFinancialMovement command, IAccountValidator validator)
     {
-        this.RaiseDomainEvent(new DepositRegistered() with
+        var subCategory = _subCategories.SingleOrDefault(sc => sc.Id == SubCategoryId.Load(command.SubCategoryId));
+        if (subCategory is null)
         {
-            Date = deposit.Date,
-            Description = deposit.Description,
-            Type = deposit.Type,
-            Status = deposit.Status,
-            SubCategoryId = deposit.SubCategoryId,
-            PaymentMethodId = deposit.PaymentMethodId,
-            Value = deposit.Value
-        });
-
-        return DomainResult.Success();
-    }
-
-    public DomainResult Withdrawal(FinancialMovement.Withdrawal withdrawal)
-    {
-        this.RaiseDomainEvent(new WithdrawalRegistered() with
+            //return DomainResult.Failure($"Sub category with id {command.SubCategoryId} not found in account");
+        }
+        
+        var paymentMethod = _paymentMethods.SingleOrDefault(pm => pm.Id == PaymentMethodId.Load(command.PaymentMethodId));
+        
+        if (paymentMethod is null)
         {
-            Date = withdrawal.Date,
-            Description = withdrawal.Description,
-            Type = withdrawal.Type,
-            Status = withdrawal.Status,
-            SubCategoryId = withdrawal.SubCategoryId,
-            PaymentMethodId = withdrawal.PaymentMethodId,
-            Value = withdrawal.Value
-        });
+            //return DomainResult.Failure($"Payment method with id {command.PaymentMethodId} not found in account");
+        }
 
         return DomainResult.Success();
     }

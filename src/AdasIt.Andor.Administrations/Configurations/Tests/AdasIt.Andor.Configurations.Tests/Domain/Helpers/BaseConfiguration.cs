@@ -3,4 +3,6 @@ public record BaseConfiguration(string Name,
         string Value,
         string Description,
         DateTime StartDate,
-        DateTime? ExpireDate);
+        DateTime? ExpireDate,
+        string CreatedBy,
+        DateTime CreatedAt);

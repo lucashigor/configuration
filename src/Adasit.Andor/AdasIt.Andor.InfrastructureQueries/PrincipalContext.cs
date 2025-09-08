@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Data;
+using AdasIt.Andor.Domain.ValuesObjects;
 
 namespace AdasIt.Andor.InfrastructureQueries;
 
@@ -25,6 +26,11 @@ public class PrincipalContext(DbContextOptions options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Ignore<Name>();
+        modelBuilder.Ignore<Description>();
+        
+        modelBuilder.ApplyConfiguration(new ProcessedEventsConfig());
+        
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             entityType.GetForeignKeys()

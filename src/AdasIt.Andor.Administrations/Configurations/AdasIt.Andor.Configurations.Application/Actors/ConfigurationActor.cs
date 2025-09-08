@@ -37,9 +37,9 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
         ReceiveAsync<PreLoadConfiguration>(async cmd =>
         {
             using var scope = _serviceProvider.CreateScope();
-            var _commandRepository = scope.ServiceProvider.GetRequiredService<ICommandsConfigurationRepository>();
+            var commandRepository = scope.ServiceProvider.GetRequiredService<ICommandsConfigurationRepository>();
 
-            var result = await _commandRepository.GetByIdAsync(_id, CancellationToken.None);
+            var result = await commandRepository.GetByIdAsync(_id, CancellationToken.None);
 
             if (result == null) return;
 
@@ -52,8 +52,8 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
         ReceiveAsync<CreateConfiguration>(async cmd =>
         {
             using var scope = _serviceProvider.CreateScope();
-            var _validator = scope.ServiceProvider.GetRequiredService<IConfigurationValidator>();
-            var _commandRepository = scope.ServiceProvider.GetRequiredService<ICommandsConfigurationRepository>();
+            var validator = scope.ServiceProvider.GetRequiredService<IConfigurationValidator>();
+            var commandRepository = scope.ServiceProvider.GetRequiredService<ICommandsConfigurationRepository>();
 
             var (result, config) = await Configuration.NewAsync(
                 _id,
@@ -63,12 +63,12 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
                 cmd.StartDate,
                 cmd.ExpireDate,
                 Guid.NewGuid().ToString(),
-                _validator,
+                validator,
                 cmd.CancellationToken);
 
-            if (config != null && config.Events.Any())
+            if (config != null && config.Events.Count != 0)
             {
-                await _commandRepository.PersistAsync(config, CancellationToken.None);
+                await commandRepository.PersistAsync(config, CancellationToken.None);
             }
 
             _configuration = config;
@@ -84,8 +84,8 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
         ReceiveAsync<UpdateConfiguration>(async cmd =>
         {
             using var scope = _serviceProvider.CreateScope();
-            var _validator = scope.ServiceProvider.GetRequiredService<IConfigurationValidator>();
-            var _commandRepository = scope.ServiceProvider.GetRequiredService<ICommandsConfigurationRepository>();
+            var validator = scope.ServiceProvider.GetRequiredService<IConfigurationValidator>();
+            var commandRepository = scope.ServiceProvider.GetRequiredService<ICommandsConfigurationRepository>();
 
             var result = _configuration!.UpdateAsync(
                 cmd.Name,
@@ -93,12 +93,12 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
                 cmd.Description,
                 cmd.StartDate,
                 cmd.ExpireDate,
-                _validator,
+                validator,
                 cmd.CancellationToken);
 
-            if (_configuration.Events.Any())
+            if (_configuration.Events.Count != 0)
             {
-                await _commandRepository.PersistAsync(_configuration, cmd.CancellationToken);
+                await commandRepository.PersistAsync(_configuration, cmd.CancellationToken);
             }
 
             Sender.Tell((result, _configuration));
@@ -110,5 +110,5 @@ public class ConfigurationActor : ReceiveActor, IWithUnboundedStash
         Stash!.UnstashAll();
     }
 
-    public record PreLoadConfiguration(ConfigurationId Id);
+    private record PreLoadConfiguration(ConfigurationId Id);
 }

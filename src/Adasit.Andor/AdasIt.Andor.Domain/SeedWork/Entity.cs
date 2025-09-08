@@ -2,6 +2,9 @@
 using AdasIt.Andor.Domain.ValuesObjects;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AdasIt.Andor.Domain.SeedWork;
 
@@ -15,12 +18,12 @@ public abstract class Entity<TEntityId> where TEntityId : IEquatable<TEntityId>,
     private readonly ICollection<Notification> _warnings = [];
     protected IReadOnlyCollection<Notification> Warnings => [.. _warnings];
 
-    protected virtual DomainResult Validate()
+    protected DomainResult Validate()
     {
         AddNotification(Id!.NotNull());
 
-        return Notifications.Count != 0 
-            ? DomainResult.Failure(errors: _notifications) 
+        return Notifications.Count != 0
+            ? DomainResult.Failure(errors: _notifications)
             : DomainResult.Success(warnings: _warnings);
     }
 
@@ -50,4 +53,28 @@ public abstract class Entity<TEntityId> where TEntityId : IEquatable<TEntityId>,
 
     protected void AddWarning(string fieldName, string message, DomainErrorCode domainError)
         => AddWarning(new(fieldName, message, domainError));
+    
+    protected async Task<(DomainResult, REntity?)> ValidateAsync<REntity>(
+        IDefaultValidator<REntity, TEntityId> validator,
+        CancellationToken cancellationToken)
+        where REntity : Entity<TEntityId>
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (this is not REntity entity)
+            throw new InvalidOperationException($"Entity is not of type {typeof(REntity).Name}");
+
+        var notifications = await validator.ValidateCreationAsync(entity, cancellationToken);
+
+        AddNotification(notifications);
+        AddNotification(Id!.NotNull());
+
+        var domainResult = Notifications.Count != 0
+            ? DomainResult.Failure(errors: _notifications)
+            : DomainResult.Success(warnings: _warnings);
+
+        return domainResult.IsFailure
+            ? (domainResult, null)
+            : (domainResult, entity);
+    }
 }

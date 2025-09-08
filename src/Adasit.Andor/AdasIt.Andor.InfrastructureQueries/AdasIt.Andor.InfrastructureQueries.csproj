@@ -8,6 +8,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\AdasIt.Andor.Application\AdasIt.Andor.DomainQueries.csproj" />
+		<ProjectReference Include="..\AdasIt.Andor.Domain\AdasIt.Andor.Domain.csproj" />
 	</ItemGroup>
 	
 	<ItemGroup>

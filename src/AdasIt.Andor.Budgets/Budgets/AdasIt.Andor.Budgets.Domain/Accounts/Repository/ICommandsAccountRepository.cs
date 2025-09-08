@@ -10,8 +10,4 @@ public interface ICommandsAccountRepository :
     ICommandRepository<Account, AccountId>
 {
     Task<Currency> GetDefaultCurrency(CancellationToken cancellationToken);
-
-    Task<IEnumerable<Category>> GetDefaultCategories(CancellationToken cancellationToken);
-
-    Task<IEnumerable<PaymentMethod>> GetDefaultPaymentMethods(CancellationToken cancellationToken);
 }

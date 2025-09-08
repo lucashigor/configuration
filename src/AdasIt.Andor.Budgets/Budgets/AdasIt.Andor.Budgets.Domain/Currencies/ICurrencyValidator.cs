@@ -1,16 +1,8 @@
-﻿using AdasIt.Andor.Domain.ValuesObjects;
+﻿using AdasIt.Andor.Budgets.Domain.Currencies.ValueObjects;
+using AdasIt.Andor.Domain.Validation;
 
 namespace AdasIt.Andor.Budgets.Domain.Currencies;
 
-public interface ICurrencyValidator
+public interface ICurrencyValidator : IDefaultValidator<Currency, CurrencyId>
 {
-    Task<List<Notification>> ValidateCreationAsync(string name,
-        string iso,
-        string symbol,
-        CancellationToken cancellationToken);
-
-    Task<List<Notification>> ValidateUpdateAsync(string name,
-        string iso,
-        string symbol,
-        CancellationToken cancellationToken);
 }

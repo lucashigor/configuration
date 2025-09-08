@@ -1,53 +1,20 @@
-﻿using AdasIt.Andor.Budgets.Domain.Currencies;
+﻿using AdasIt.Andor.Budgets.Domain.Accounts.ValueObjects;
+using AdasIt.Andor.Budgets.Domain.Currencies;
 using AdasIt.Andor.Domain.Validation;
 using AdasIt.Andor.Domain.ValuesObjects;
 
 namespace AdasIt.Andor.Budgets.Domain.Accounts;
 
-public class AccountValidator : IAccountValidator
+public class AccountValidator : DefaultValidator<Account, AccountId>, IAccountValidator
 {
-    public async Task<List<Notification>> ValidateCreationAsync(string name,
-        string description,
-        Currency? currency,
-        AccountStatus status,
-        CancellationToken cancellationToken)
-    {
-        List<Notification> notifications = new();
-
-        await DefaultValidationsAsync(name, notifications, cancellationToken);
-
-        return notifications;
-    }
-
-    public async Task<List<Notification>> ValidateUpdateAsync(Account current,
-        string name,
-        string description,
-        Currency currency,
-        CancellationToken cancellationToken)
-    {
-        List<Notification> notifications = new();
-
-        await DefaultValidationsAsync(name, notifications, cancellationToken);
-
-        return notifications;
-    }
-
-    private Task DefaultValidationsAsync(
-        string name,
+    protected sealed override async Task DefaultValidationsAsync(
+        Account entity,
         List<Notification> notifications,
         CancellationToken cancellationToken)
     {
-        AddNotification(name.NotNullOrEmptyOrWhiteSpace(), notifications);
-        AddNotification(name.BetweenLength(3, 70), notifications);
-
-        return Task.CompletedTask;
-    }
-
-    private static void AddNotification(Notification? notification, List<Notification> list)
-    {
-        if (notification != null)
-        {
-            list.Add(notification);
-        }
+        await base.DefaultValidationsAsync(entity, notifications, cancellationToken);
+        
+        AddNotification(entity.Name.NotNull(), notifications);
+        AddNotification(entity.Description.NotNull(), notifications);
     }
 }

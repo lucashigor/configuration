@@ -19,30 +19,35 @@ public class Invite : Entity<InviteId>
     public AccountId AccountId { get; private set; }
     public Account? Account { get; private set; }
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    private Invite()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    /// <summary>
+    /// Used to be constructed via reflection in: EventSourcing repository, ORM, etc.
+    /// </summary>
+#pragma warning disable CS8618, CS9264
+    protected Invite()
+#pragma warning restore CS8618, CS9264
     {
         // For EF
     }
 
-    public static async Task<(DomainResult, Invite?)> NewAsync(string name,
-        IInviteValidator currencyValidator,
+    private Invite(string email, User inviting, User? guest,
+        InviteStatus status, Account account)
+    {
+            Email = email;
+            InvitingId = inviting.Id;
+            Inviting = inviting;
+            GuestId = guest?.Id;
+            Guest = guest;
+            Status = status;
+            AccountId = account.Id;
+            Account = account;
+    }
+
+    public static async Task<(DomainResult, Invite?)> NewAsync(string email, User inviting, User? guest, Account account,
+        IInviteValidator validator,
         CancellationToken cancellationToken)
     {
-        var entity = new Invite();
-
-        var notifications = await currencyValidator.ValidateCreationAsync(entity.Email, cancellationToken);
-
-        entity.AddNotification(notifications);
-
-        var result = entity.Validate();
-
-        if (result.IsFailure)
-        {
-            return (result, null);
-        }
-
-        return (result, entity);
+        var entity = new Invite(email, inviting, guest, InviteStatus.Pending, account);
+        
+        return await entity.ValidateAsync(validator, cancellationToken);
     }
 }
