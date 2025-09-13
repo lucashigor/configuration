@@ -1,18 +1,24 @@
+using AdasIt.Andor.Budgets.Domain.Accounts.Repository;
+using AdasIt.Andor.Budgets.InfrastructureCommands;
 using AdasIt.Andor.Budgets.InfrastructureQueries.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AdasIt.Andor.Budget.Ioc.Infrastructure;
+
 internal static class InfrastructureDbContext
 {
     internal static IServiceCollection UseDbContext(this IServiceCollection services,
         IConfiguration configuration)
     {
+
+        services.AddScoped<IDefaultsProvider, DefaultsProvider>();
+
         var conn = configuration.GetConnectionString(nameof(BudgetContext));
 
         if (string.IsNullOrEmpty(conn) is true) return services;
-        
+
         services.AddDbContext<BudgetContext>(options =>
         {
             options.EnableDetailedErrors();

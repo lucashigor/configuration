@@ -1,25 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Akka" />
-    <PackageReference Include="Akka.Persistence" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Akka" />
+		<PackageReference Include="Akka.Hosting" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Adasit.Andor\AdasIt.Andor.ApplicationDto\AdasIt.Andor.ApplicationDto.csproj" />
-    <ProjectReference Include="..\..\..\Adasit.Andor\AdasIt.Andor.Application\AdasIt.Andor.DomainQueries.csproj" />
-    <ProjectReference Include="..\..\..\Adasit.Andor\AdasIt.Andor.Domain\AdasIt.Andor.Domain.csproj" />
-    <ProjectReference Include="..\AdasIt.Andor.Configurations.DomainQueries\AdasIt.Andor.Configurations.DomainQueries.csproj" />
-    <ProjectReference Include="..\AdasIt.Andor.Configurations.Domain\AdasIt.Andor.Configurations.Domain.csproj" />
-    <ProjectReference Include="..\AdasIt.Andor.Configurations.Dto\AdasIt.Andor.Configurations.ApplicationDto.csproj" />
-    <ProjectReference Include="..\AdasIt.Andor.Configurations.Repository\AdasIt.Andor.Configurations.InfrastructureCommands.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Adasit.Andor\AdasIt.Andor.ApplicationDto\AdasIt.Andor.ApplicationDto.csproj" />
+		<ProjectReference Include="..\..\..\Adasit.Andor\AdasIt.Andor.Application\AdasIt.Andor.DomainQueries.csproj" />
+		<ProjectReference Include="..\..\..\Adasit.Andor\AdasIt.Andor.Domain\AdasIt.Andor.Domain.csproj" />
+		<ProjectReference Include="..\AdasIt.Andor.Configurations.DomainQueries\AdasIt.Andor.Configurations.DomainQueries.csproj" />
+		<ProjectReference Include="..\AdasIt.Andor.Configurations.Domain\AdasIt.Andor.Configurations.Domain.csproj" />
+		<ProjectReference Include="..\AdasIt.Andor.Configurations.Dto\AdasIt.Andor.Configurations.ApplicationDto.csproj" />
+	</ItemGroup>
 
 </Project>

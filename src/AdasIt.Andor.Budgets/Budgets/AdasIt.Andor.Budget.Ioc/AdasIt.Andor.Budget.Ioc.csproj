@@ -12,7 +12,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\Adasit.Andor\AdasIt.Andor.Infrastructure\AdasIt.Andor.Infrastructure.csproj" />
+      <ProjectReference Include="..\AdasIt.Andor.Budget.Application\AdasIt.Andor.Budget.Application.csproj" />
+      <ProjectReference Include="..\AdasIt.Andor.Budgets.InfrastructureCommands\AdasIt.Andor.Budgets.InfrastructureCommands.csproj" />
       <ProjectReference Include="..\AdasIt.Andor.Budgets.InfrastructureQueries\AdasIt.Andor.Budgets.InfrastructureQueries.csproj" />
+      <ProjectReference Include="..\AdasIt.Andor.Budgets.WebApi\AdasIt.Andor.Budgets.WebApi.csproj" />
     </ItemGroup>
 
 </Project>

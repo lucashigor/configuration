@@ -1,4 +1,3 @@
-using AdasIt.Andor.Budgets.Domain.Accounts.ValueObjects;
 using AdasIt.Andor.Budgets.Domain.Categories;
 using AdasIt.Andor.Budgets.Domain.Categories.ValueObjects;
 using AdasIt.Andor.Budgets.InfrastructureQueries.FinancialMovements.Config;
@@ -17,22 +16,20 @@ public class CategoryConfig : IEntityTypeConfiguration<Category>
         builder.ToTable(nameof(Category), SchemasNames.Budget);
         builder.HasKey(k => k.Id);
         builder.Property(k => k.Id).HasConversion(GetCategoryIdConverter());
-        
+
         builder.Property(k => k.Name)
             .HasConversion(Converters.GetNameConverter())
             .HasMaxLength(Name.MaxLength);
-        
+
         builder.Property(k => k.Description)
             .HasConversion(Converters.GetDescriptionConverter())
             .HasMaxLength(Description.MaxLength);
-        
-        builder.Property(k => k.Type).HasConversion(FinancialMovementConfig.GetMovementTypeConverter());
 
-        builder.HasMany(x => x.SubCategories).WithOne(x => x.Category).HasForeignKey(x => x.CategoryId);
+        builder.Property(k => k.Type).HasConversion(FinancialMovementConfig.GetMovementTypeConverter());
     }
 
     private static ValueConverter<CategoryId, Guid> GetCategoryIdConverter()
         => new(id => id!.Value, value => CategoryId.Load(value));
-    
+
 
 }

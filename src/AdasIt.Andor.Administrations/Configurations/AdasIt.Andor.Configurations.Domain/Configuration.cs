@@ -17,11 +17,16 @@ public class Configuration : AggregateRoot<ConfigurationId>
     public DateTime CreatedAt { get; private set; }
     public ConfigurationState State => GetStatus(false, StartDate, ExpireDate);
 
-    public Configuration()
+    /// <summary>
+    /// Used to be constructed via reflection in: EventSourcing repository, ORM, etc.
+    /// </summary>
+#pragma warning disable CS8618, CS9264
+    private Configuration()
+#pragma warning restore CS8618, CS9264
     {
-            
+
     }
-    
+
     private Configuration(
             ConfigurationId id,
             Name name,
@@ -51,7 +56,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
         string userId,
         IConfigurationValidator configurationValidator,
         CancellationToken cancellationToken)
-        => NewAsync(ConfigurationId.New(), name, value, description, startDate, expireDate, userId, 
+        => NewAsync(ConfigurationId.New(), name, value, description, startDate, expireDate, userId,
             configurationValidator, cancellationToken);
 
     public static async Task<(DomainResult, Configuration?)> NewAsync(
@@ -75,7 +80,14 @@ public class Configuration : AggregateRoot<ConfigurationId>
             userId,
             DateTime.UtcNow);
 
-        return await entity.ValidateAsync(validator, cancellationToken);
+        var result = await entity.ValidateAsync(validator, cancellationToken);
+
+        if (result.Item1.IsSuccess)
+        {
+            entity.RaiseDomainEvent(ConfigurationCreated.FromConfiguration(entity));
+        }
+
+        return result;
     }
 
     public static ConfigurationState GetStatus(bool _isDeleted, DateTime _startDate, DateTime? _expireDate)
@@ -104,10 +116,10 @@ public class Configuration : AggregateRoot<ConfigurationId>
     }
 
     #region Update
-    public async Task<DomainResult> UpdateAsync(Name name, Value value, Description description, DateTime startDate, 
+    public async Task<DomainResult> UpdateAsync(Name name, Value value, Description description, DateTime startDate,
         DateTime? expireDate, IConfigurationValidator configurationValidator, CancellationToken cancellationToken)
     {
-        var notifications = await configurationValidator.ValidateUpdateAsync(this, name, 
+        var notifications = await configurationValidator.ValidateUpdateAsync(this, name,
             value, description, startDate, expireDate, cancellationToken);
 
         AddNotification(notifications);

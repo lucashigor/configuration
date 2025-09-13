@@ -1,9 +1,7 @@
-﻿using AdasIt.Andor.Budgets.Domain.Accounts.Commands;
-using AdasIt.Andor.Budgets.Domain.Accounts.Events;
+﻿using AdasIt.Andor.Budgets.Domain.Accounts.Events;
 using AdasIt.Andor.Budgets.Domain.Accounts.ValueObjects;
 using AdasIt.Andor.Budgets.Domain.Categories;
 using AdasIt.Andor.Budgets.Domain.Currencies;
-using AdasIt.Andor.Budgets.Domain.FinancialMovements;
 using AdasIt.Andor.Budgets.Domain.Invites;
 using AdasIt.Andor.Budgets.Domain.PaymentMethods;
 using AdasIt.Andor.Budgets.Domain.PaymentMethods.ValueObjects;
@@ -60,8 +58,8 @@ public class Account : AggregateRoot<AccountId>
         CancellationToken cancellationToken)
     {
         var entity = new Account(name, description, currency, AccountStatus.Active);
-        
-        var result =  await entity.ValidateAsync(validator, cancellationToken);
+
+        var result = await entity.ValidateAsync(validator, cancellationToken);
 
         entity.RaiseDomainEvent(AccountCreated.FromConfiguration(entity));
 
@@ -71,7 +69,7 @@ public class Account : AggregateRoot<AccountId>
     public DomainResult SetCategoriesAvailable(IEnumerable<Category> categories)
     {
         var categoriesList = categories.ToList();
-        
+
         _categories = categoriesList;
         _subCategories = categoriesList.SelectMany(c => c.SubCategories).ToList();
 
@@ -84,17 +82,24 @@ public class Account : AggregateRoot<AccountId>
 
         return DomainResult.Success();
     }
-    
-    public DomainResult AddFinancialMovement(AddFinancialMovement command, IAccountValidator validator)
+
+    public DomainResult AddFinancialMovement(
+        DateTime date,
+        string name,
+        SubCategoryId subCategoryId,
+        int status,
+        PaymentMethodId paymentMethodId,
+        decimal value, IAccountValidator validator)
     {
-        var subCategory = _subCategories.SingleOrDefault(sc => sc.Id == SubCategoryId.Load(command.SubCategoryId));
+        var subCategory = _subCategories.SingleOrDefault(sc => sc.Id == subCategoryId);
+
         if (subCategory is null)
         {
             //return DomainResult.Failure($"Sub category with id {command.SubCategoryId} not found in account");
         }
-        
-        var paymentMethod = _paymentMethods.SingleOrDefault(pm => pm.Id == PaymentMethodId.Load(command.PaymentMethodId));
-        
+
+        var paymentMethod = _paymentMethods.SingleOrDefault(pm => pm.Id == paymentMethodId);
+
         if (paymentMethod is null)
         {
             //return DomainResult.Failure($"Payment method with id {command.PaymentMethodId} not found in account");

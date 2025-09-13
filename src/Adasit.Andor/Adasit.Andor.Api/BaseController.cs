@@ -1,4 +1,4 @@
-﻿using AdasIt.Andor.ApplicationDto;
+﻿using AdasIt.Andor.ApplicationDto.Results;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

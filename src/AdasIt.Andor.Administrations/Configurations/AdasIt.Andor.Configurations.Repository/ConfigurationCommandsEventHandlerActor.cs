@@ -1,11 +1,11 @@
-﻿using AdasIt.Andor.Configurations.Domain;
+﻿using Adasit.Andor.Mapping;
+using AdasIt.Andor.Configurations.Domain;
 using AdasIt.Andor.Configurations.Domain.Events;
-using AdasIt.Andor.Configurations.Domain.ValueObjects;
 using Akka.Actor;
 using Akka.Persistence;
-using Mapster;
 
 namespace AdasIt.Andor.Configurations.InfrastructureCommands;
+
 public class ConfigurationCommandsEventHandlerActor : ReceivePersistentActor
 {
     private readonly Guid _configId;
@@ -34,7 +34,7 @@ public class ConfigurationCommandsEventHandlerActor : ReceivePersistentActor
             return;
         }
 
-        var configuration = _configuration.Adapt<Configuration>();
+        var configuration = Mappings.GetValid<Configuration, ConfigurationEntity>(_configuration);
 
         Context.Sender.Tell(configuration);
     }
@@ -71,14 +71,31 @@ public class ConfigurationCommandsEventHandlerActor : ReceivePersistentActor
 
     private void Apply(ConfigurationCreated evt)
     {
-        _configuration = evt.Adapt(_configuration);
+        if (_configuration == null)
+        {
+            _configuration = new ConfigurationEntity();
+        }
+
+        _configuration.Id = evt.Id;
+        _configuration.Name = evt.Name;
+        _configuration.Value = evt.Value;
+        _configuration.Description = evt.Description;
+        _configuration.StartDate = evt.StartDate;
+        _configuration.ExpireDate = evt.ExpireDate;
+        _configuration.CreatedBy = evt.CreatedBy;
+        _configuration.CreatedAt = evt.CreatedAt;
     }
 
     private void Apply(ConfigurationUpdated evt)
     {
         if (_configuration != null)
         {
-            _configuration = evt.Adapt(_configuration);
+            _configuration.Id = evt.Id;
+            _configuration.Name = evt.Name;
+            _configuration.Value = evt.Value;
+            _configuration.Description = evt.Description;
+            _configuration.StartDate = evt.StartDate;
+            _configuration.ExpireDate = evt.ExpireDate;
         }
     }
 }

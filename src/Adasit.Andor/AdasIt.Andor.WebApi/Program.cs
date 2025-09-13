@@ -1,5 +1,5 @@
 ﻿using Adasit.Andor.Auth;
-using AdasIt.Andor.ApplicationDto;
+using AdasIt.Andor.ApplicationDto.Results;
 using AdasIt.Andor.Budget.Ioc;
 using AdasIt.Andor.Configurations.Ioc;
 using AdasIt.Andor.Infrastructure;

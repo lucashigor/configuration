@@ -1,4 +1,4 @@
-﻿using AdasIt.Andor.ApplicationDto;
+﻿using AdasIt.Andor.ApplicationDto.Results;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Diagnostics;

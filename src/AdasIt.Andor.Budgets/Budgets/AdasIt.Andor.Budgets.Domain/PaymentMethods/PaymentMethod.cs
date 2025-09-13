@@ -1,7 +1,6 @@
 ﻿using AdasIt.Andor.Budgets.Domain.Accounts.ValueObjects;
 using AdasIt.Andor.Budgets.Domain.PaymentMethods.ValueObjects;
 using AdasIt.Andor.Domain.SeedWork;
-using AdasIt.Andor.Domain.Validation;
 using AdasIt.Andor.Domain.ValuesObjects;
 
 namespace AdasIt.Andor.Budgets.Domain.PaymentMethods;
@@ -38,7 +37,7 @@ public class PaymentMethod : Entity<PaymentMethodId>
         CancellationToken cancellationToken)
     {
         var entity = new PaymentMethod(name, description, startDate, deactivationDate, type);
-        
+
         return await entity.ValidateAsync(validator, cancellationToken);
     }
 }

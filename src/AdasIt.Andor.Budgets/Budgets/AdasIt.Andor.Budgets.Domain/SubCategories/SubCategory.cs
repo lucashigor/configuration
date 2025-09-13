@@ -1,7 +1,5 @@
 ﻿using AdasIt.Andor.Budgets.Domain.Accounts.ValueObjects;
-using AdasIt.Andor.Budgets.Domain.Categories;
 using AdasIt.Andor.Budgets.Domain.Categories.ValueObjects;
-using AdasIt.Andor.Budgets.Domain.PaymentMethods;
 using AdasIt.Andor.Budgets.Domain.PaymentMethods.ValueObjects;
 using AdasIt.Andor.Budgets.Domain.SubCategories.ValueObjects;
 using AdasIt.Andor.Domain.SeedWork;
@@ -16,10 +14,8 @@ public class SubCategory : Entity<SubCategoryId>
     public DateTime StartDate { get; private set; }
     public DateTime? DeactivationDate { get; private set; }
     public CategoryId CategoryId { get; private set; }
-    public Category Category { get; private set; }
-    public MovementType Type => Category.Type;
+    public MovementType Type { get; private set; }
     public PaymentMethodId DefaultPaymentMethodId { get; private set; }
-    public PaymentMethod DefaultPaymentMethod { get; private set; }
 
     /// <summary>
     /// Used to be constructed via reflection in: EventSourcing repository, ORM, etc.
@@ -35,31 +31,32 @@ public class SubCategory : Entity<SubCategoryId>
         Description description,
         DateTime startDate,
         DateTime deactivationDate,
-        Category category,
-        PaymentMethod defaultPaymentMethod)
+        PaymentMethodId defaultPaymentMethod,
+        MovementType type,
+        CategoryId categoryId)
     {
         Name = name;
         Description = description;
         StartDate = startDate;
         DeactivationDate = deactivationDate;
-        Category = category;
-        CategoryId = category.Id;
-        DefaultPaymentMethod = defaultPaymentMethod;
-        DefaultPaymentMethodId = defaultPaymentMethod.Id;
+        Type = type;
+        CategoryId = categoryId;
+        DefaultPaymentMethodId = defaultPaymentMethod;
     }
 
     public static async Task<(DomainResult, SubCategory?)> NewAsync(Name name,
         Description description,
         DateTime startDate,
         DateTime deactivationDate,
-        Category category,
-        PaymentMethod defaultPaymentMethod,
+        CategoryId categoryId,
+        PaymentMethodId defaultPaymentMethod,
+        MovementType type,
         ISubCategoryValidator validator,
         CancellationToken cancellationToken)
     {
         var entity = new SubCategory(name, description, startDate, deactivationDate,
-            category, defaultPaymentMethod);
-        
+            defaultPaymentMethod, type, categoryId);
+
         return await entity.ValidateAsync(validator, cancellationToken);
     }
 }

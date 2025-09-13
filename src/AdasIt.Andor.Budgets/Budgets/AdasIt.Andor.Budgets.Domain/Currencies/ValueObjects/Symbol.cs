@@ -4,7 +4,7 @@ namespace AdasIt.Andor.Budgets.Domain.Currencies.ValueObjects;
 
 public record Symbol : StringValueObject
 {
-    private const int MinLength = 2;
+    private const int MinLength = 1;
     public const int MaxLength = 3;
 
     private Symbol(string value) : base(value, MinLength, MaxLength, nameof(Symbol)) { }

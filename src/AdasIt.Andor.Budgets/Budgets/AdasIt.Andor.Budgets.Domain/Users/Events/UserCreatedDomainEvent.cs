@@ -16,7 +16,7 @@ public record UserCreatedDomainEvent : DomainEvent
             Id = entity.Id,
             FirstName = entity.FirstName,
             LastName = entity.LastName,
-            Email = entity.Email.Address,
+            Email = entity.Email,
             PreferredCurrencyId = (Guid)entity.PreferredCurrencyId,
             PreferredLanguageId = (Guid)entity.PreferredLanguageId
         };

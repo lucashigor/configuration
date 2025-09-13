@@ -1,12 +1,11 @@
-﻿using System.ComponentModel;
-using AdasIt.Andor.Domain.ValuesObjects;
+﻿using AdasIt.Andor.Domain.ValuesObjects;
 using Bogus;
 
 namespace AdasIt.Andor.TestsUtil;
 
 public static class GeneralFixture
 {
-    private static Faker Faker { get; set; } = new Faker();
+    public static Faker Faker { get; set; } = new Faker();
 
     public static string GetStringRightSize(int minLength, int maxLength)
     {
@@ -24,7 +23,7 @@ public static class GeneralFixture
 
         return stringValue;
     }
-    
+
     public static T CreateInstanceAndSetProperties<T>(Dictionary<string, object> propertyValues) where T : class
     {
         var type = typeof(T);
@@ -41,10 +40,14 @@ public static class GeneralFixture
 
         return instance;
     }
-    
+
+    public static Email GetValidEmail()
+        => Faker.Person.Email;
+
+
     public static Name GetValidName()
         => GeneralFixture.GetStringRightSize(Name.MinLength, Name.MaxLength);
-    
+
     public static Description GetValidDescription()
         => GeneralFixture.GetStringRightSize(Description.MinLength, Description.MaxLength);
 }

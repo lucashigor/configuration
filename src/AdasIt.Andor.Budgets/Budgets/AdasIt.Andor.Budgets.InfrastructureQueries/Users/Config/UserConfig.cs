@@ -1,13 +1,12 @@
-using System.Net.Mail;
 using AdasIt.Andor.Budgets.Domain.Currencies.ValueObjects;
 using AdasIt.Andor.Budgets.Domain.Users;
 using AdasIt.Andor.Budgets.Domain.Users.ValueObjects;
+using AdasIt.Andor.Domain.ValuesObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AdasIt.Andor.Budgets.InfrastructureQueries.Users.Config;
-
 
 public record UserConfig : IEntityTypeConfiguration<User>
 {
@@ -19,8 +18,8 @@ public record UserConfig : IEntityTypeConfiguration<User>
         entity.Property(k => k.Email)
             .HasMaxLength(70)
             .HasConversion(
-                email => email!.Address,
-                value => new MailAddress(value));
+                email => email!.Value,
+                value => (Email)value);
 
         entity.Property(k => k.PreferredCurrencyId)
             .HasConversion(

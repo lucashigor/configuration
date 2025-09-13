@@ -1,4 +1,4 @@
-﻿using AdasIt.Andor.ApplicationDto;
+﻿using AdasIt.Andor.ApplicationDto.Results;
 using AdasIt.Andor.Configurations.Application.Actions;
 using AdasIt.Andor.Configurations.Application.Actors;
 using AdasIt.Andor.Configurations.Application.Interfaces;

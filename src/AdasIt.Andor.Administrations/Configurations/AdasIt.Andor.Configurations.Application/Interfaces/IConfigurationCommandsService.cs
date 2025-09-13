@@ -1,4 +1,4 @@
-﻿using AdasIt.Andor.ApplicationDto;
+﻿using AdasIt.Andor.ApplicationDto.Results;
 using AdasIt.Andor.Configurations.ApplicationDto;
 using AdasIt.Andor.Configurations.Domain.ValueObjects;
 using AdasIt.Andor.Configurations.DomainQueries;

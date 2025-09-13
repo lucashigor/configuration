@@ -22,10 +22,8 @@ public record InviteConfig : IEntityTypeConfiguration<Invite>
         builder.Property(k => k.Status).HasConversion(
             state => state.Key,
             value => InviteStatus.GetByKey<InviteStatus>(value));
-
-        builder.HasOne(k => k.Account).WithMany(x => x.Invites).HasForeignKey(x => x.AccountId);
     }
 
-     static ValueConverter<InviteId, Guid> GetInviteIdConverter()
-        => new(id => id!.Value, value => InviteId.Load(value));
+    static ValueConverter<InviteId, Guid> GetInviteIdConverter()
+       => new(id => id!.Value, value => InviteId.Load(value));
 }

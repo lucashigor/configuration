@@ -9,7 +9,7 @@ namespace AdasIt.Andor.Budgets.Tests;
 
 public class SubCategoryTests
 {
-    private static  Category CreateCategory() =>
+    private static Category CreateCategory() =>
         CategoriesFixture.GetValidDepositCategory();
 
     private static PaymentMethod CreatePaymentMethod() =>
@@ -30,7 +30,7 @@ public class SubCategoryTests
         // Act
         var (result, subCategory) = await SubCategory.NewAsync(
             "ValidName", "ValidDescription", DateTime.UtcNow, DateTime.UtcNow.AddYears(1),
-            category, paymentMethod, validator, CancellationToken.None);
+            category.Id, paymentMethod.Id, category.Type, validator, CancellationToken.None);
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -57,7 +57,7 @@ public class SubCategoryTests
         // Act
         var (result, subCategory) = await SubCategory.NewAsync(
             "", "ValidDescription", DateTime.UtcNow, DateTime.UtcNow.AddYears(1),
-            category, paymentMethod, validator, CancellationToken.None);
+            category.Id, paymentMethod.Id, category.Type, validator, CancellationToken.None);
 
         // Assert
         Assert.True(result.IsFailure);

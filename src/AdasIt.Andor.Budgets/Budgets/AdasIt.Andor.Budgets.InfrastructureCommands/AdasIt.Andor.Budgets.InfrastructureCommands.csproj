@@ -1,17 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
-  </ItemGroup>
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>AdasIt.Andor.Budgets.Tests</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\AdasIt.Andor.Budgets.Domain\AdasIt.Andor.Budgets.Domain.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Akka" />
+		<PackageReference Include="Akka.Hosting" />
+		<PackageReference Include="Akka.Persistence" />
+		<PackageReference Include="Akka.Persistence.PostgreSql" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Adasit.Andor\AdasIt.Andor.Infrastructure\AdasIt.Andor.Infrastructure.csproj" />
+		<ProjectReference Include="..\..\..\Adasit.Andor\Adasit.Andor.Mapping\Adasit.Andor.Mapping.csproj" />
+		<ProjectReference Include="..\AdasIt.Andor.Budgets.Domain\AdasIt.Andor.Budgets.Domain.csproj" />
+	</ItemGroup>
 
 </Project>

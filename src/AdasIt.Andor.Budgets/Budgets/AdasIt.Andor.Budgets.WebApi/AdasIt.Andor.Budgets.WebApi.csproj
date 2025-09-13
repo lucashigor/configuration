@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Akka" />
+		<PackageReference Include="Akka.Hosting" />
+		<PackageReference Include="Akka.Persistence" />
+		<PackageReference Include="Akka.Persistence.PostgreSql" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\Adasit.Andor\Adasit.Andor.Api\Adasit.Andor.Api.csproj" />
+	  <ProjectReference Include="..\AdasIt.Andor.Budget.Application\AdasIt.Andor.Budget.Application.csproj" />
+	</ItemGroup>
+
+</Project>

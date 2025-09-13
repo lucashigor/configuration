@@ -9,7 +9,7 @@ public static class ApiExtensions
     public static IServiceCollection UseApi(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddControllers()
-            .PartManager.ApplicationParts.Add(new AssemblyPart(typeof(ConfigurationController).Assembly));
+            .PartManager.ApplicationParts.Add(new AssemblyPart(typeof(ConfigurationsController).Assembly));
 
         return services;
     }

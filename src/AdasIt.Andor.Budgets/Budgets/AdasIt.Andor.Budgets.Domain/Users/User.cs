@@ -2,16 +2,14 @@
 using AdasIt.Andor.Budgets.Domain.Users.ValueObjects;
 using AdasIt.Andor.Domain.SeedWork;
 using AdasIt.Andor.Domain.ValuesObjects;
-using System.Net.Mail;
 
 namespace AdasIt.Andor.Budgets.Domain.Users;
 
 public sealed class User : AggregateRoot<UserId>
 {
-    
     public Name FirstName { get; private set; }
     public Name LastName { get; private set; }
-    public MailAddress Email { get; private set; }
+    public Email Email { get; private set; }
     public CurrencyId PreferredCurrencyId { get; private set; }
     public LanguageId PreferredLanguageId { get; private set; }
 
@@ -19,12 +17,12 @@ public sealed class User : AggregateRoot<UserId>
     /// Used to be constructed via reflection in: EventSourcing repository, ORM, etc.
     /// </summary>
 #pragma warning disable CS8618, CS9264
-    protected User()
+    private User()
 #pragma warning restore CS8618, CS9264
     {
     }
 
-    private User(Name firstName, Name lastName, MailAddress email, CurrencyId preferredCurrencyId,
+    private User(Name firstName, Name lastName, Email email, CurrencyId preferredCurrencyId,
         LanguageId preferredLanguageId)
     {
         FirstName = firstName;
@@ -34,8 +32,8 @@ public sealed class User : AggregateRoot<UserId>
         PreferredLanguageId = preferredLanguageId;
     }
 
-    public static async Task<(DomainResult, User?)> NewAsync(Name firstName, Name lastName, 
-        MailAddress email, CurrencyId preferredCurrencyId, LanguageId preferredLanguageId,
+    public static async Task<(DomainResult, User?)> NewAsync(Name firstName, Name lastName,
+        Email email, CurrencyId preferredCurrencyId, LanguageId preferredLanguageId,
         IUserValidator validator, CancellationToken cancellationToken)
     {
         var entity = new User(firstName, lastName, email, preferredCurrencyId, preferredLanguageId);

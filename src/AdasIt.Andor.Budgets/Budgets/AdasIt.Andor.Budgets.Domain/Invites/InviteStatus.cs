@@ -9,5 +9,5 @@ public record InviteStatus : Enumeration<int>
     public static readonly InviteStatus Undefined = new(0, "undefined");
     public static readonly InviteStatus Pending = new(1, "Pending");
     public static readonly InviteStatus Accepted = new(2, "Accepted");
-    public static readonly InviteStatus Refused = new(2, "Refused");
+    public static readonly InviteStatus Refused = new(3, "Refused");
 }

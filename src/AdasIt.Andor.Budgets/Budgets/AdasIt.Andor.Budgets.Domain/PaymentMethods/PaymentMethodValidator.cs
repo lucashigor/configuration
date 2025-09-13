@@ -1,5 +1,4 @@
-﻿using AdasIt.Andor.Budgets.Domain.Accounts.ValueObjects;
-using AdasIt.Andor.Budgets.Domain.PaymentMethods.ValueObjects;
+﻿using AdasIt.Andor.Budgets.Domain.PaymentMethods.ValueObjects;
 using AdasIt.Andor.Domain.Validation;
 using AdasIt.Andor.Domain.ValuesObjects;
 
@@ -13,14 +12,14 @@ public class PaymentMethodValidator : DefaultValidator<PaymentMethod, PaymentMet
         CancellationToken cancellationToken)
     {
         await base.DefaultValidationsAsync(entity, notifications, cancellationToken);
-        
+
         AddNotification(entity.Name.Value.NotNullOrEmptyOrWhiteSpace(), notifications);
-        
+
         AddNotification(entity.Description.Value.NotNullOrEmptyOrWhiteSpace(), notifications);
-        
+
         AddNotification(entity.StartDate.NotNull(), notifications);
         AddNotification(entity.StartDate.NotDefaultDateTime(), notifications);
-        
+
         AddNotification(entity.DeactivationDate.NotDefaultDateTime(), notifications);
     }
 }

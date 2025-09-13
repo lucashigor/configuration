@@ -11,11 +11,11 @@
     <PackageReference Include="Akka.Hosting" />
     <PackageReference Include="Akka.Persistence" />
     <PackageReference Include="Akka.Persistence.PostgreSql" />
-    <PackageReference Include="Mapster" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Adasit.Andor\AdasIt.Andor.Infrastructure\AdasIt.Andor.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Adasit.Andor\Adasit.Andor.Mapping\Adasit.Andor.Mapping.csproj" />
     <ProjectReference Include="..\AdasIt.Andor.Configurations.Domain\AdasIt.Andor.Configurations.Domain.csproj" />
     <ProjectReference Include="..\AdasIt.Andor.Configurations.Dto\AdasIt.Andor.Configurations.ApplicationDto.csproj" />
   </ItemGroup>

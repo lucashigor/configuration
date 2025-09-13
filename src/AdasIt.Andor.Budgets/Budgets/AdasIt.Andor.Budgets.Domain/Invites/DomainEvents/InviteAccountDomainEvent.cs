@@ -12,7 +12,6 @@ public sealed record InviteCreatedDomainEvent
         {
             InviteId = entity.Id,
             Email = entity.Email,
-            AccountId = entity.AccountId,
             InvitingId = entity.InvitingId,
         };
 }
